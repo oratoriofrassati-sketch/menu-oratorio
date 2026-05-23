@@ -26,7 +26,8 @@ export default async function HomePage() {
     .eq("id", 1)
     .single();
 
-  const fastFoodOpen = settings?.fast_food_open ?? true;
+  const fastFoodOpen =
+    settings?.fast_food_open ?? true;
 
   const activeIds =
     activeMenu?.map((item) => item.product_id) || [];
@@ -40,6 +41,7 @@ export default async function HomePage() {
     weekday: "long",
     day: "numeric",
     month: "long",
+    timeZone: "Europe/Rome",
   }).format(new Date());
 
   return (
