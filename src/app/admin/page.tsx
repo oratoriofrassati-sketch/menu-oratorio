@@ -16,6 +16,9 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
 
+  const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useEffect(() => {
     async function loadData() {
       const { data: productsData } = await supabase
@@ -28,19 +31,24 @@ export default function AdminPage() {
         .select("*");
 
       setProducts(productsData || []);
+
       setActiveMenuIds(
         activeMenuData?.map((item) => item.product_id) || []
       );
     }
 
-    loadData();
-  }, []);
+    if (isLoggedIn) {
+      loadData();
+    }
+  }, [isLoggedIn]);
 
   function toggleProduct(productId: string) {
     setMessage("");
 
     if (activeMenuIds.includes(productId)) {
-      setActiveMenuIds(activeMenuIds.filter((id) => id !== productId));
+      setActiveMenuIds(
+        activeMenuIds.filter((id) => id !== productId)
+      );
     } else {
       setActiveMenuIds([...activeMenuIds, productId]);
     }
@@ -81,6 +89,51 @@ export default function AdminPage() {
     setIsSaving(false);
   }
 
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-blue-900 text-white p-8 flex items-center justify-center">
+        <div className="bg-blue-800 rounded-3xl p-8 w-full max-w-md">
+          <h1 className="text-4xl font-black mb-6">
+            Accesso cucina
+          </h1>
+
+          <input
+            type="password"
+            value={password}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
+            placeholder="Password"
+            className="w-full rounded-xl p-4 text-black mb-4"
+          />
+
+          <button
+            onClick={() => {
+              if (
+                password ===
+                process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+              ) {
+                setIsLoggedIn(true);
+                setMessage("");
+              } else {
+                setMessage("Password errata.");
+              }
+            }}
+            className="w-full rounded-2xl bg-yellow-400 text-blue-950 font-black text-xl py-4"
+          >
+            Entra
+          </button>
+
+          {message && (
+            <p className="mt-4 font-bold">
+              {message}
+            </p>
+          )}
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-blue-900 text-white p-8">
       <div className="max-w-3xl mx-auto">
@@ -89,19 +142,25 @@ export default function AdminPage() {
         </h1>
 
         <p className="mb-8 text-blue-100">
-          Seleziona i prodotti disponibili e poi premi Pubblica.
+          Seleziona i prodotti disponibili e poi premi
+          Pubblica.
         </p>
 
         <div className="bg-blue-800 rounded-3xl p-6 space-y-4 mb-8">
           {products.map((product) => {
-            const isActive = activeMenuIds.includes(product.id);
+            const isActive =
+              activeMenuIds.includes(product.id);
 
             return (
               <button
                 key={product.id}
-                onClick={() => toggleProduct(product.id)}
+                onClick={() =>
+                  toggleProduct(product.id)
+                }
                 className={`w-full p-4 rounded-2xl text-left transition ${
-                  isActive ? "bg-green-600" : "bg-blue-700"
+                  isActive
+                    ? "bg-green-600"
+                    : "bg-blue-700"
                 }`}
               >
                 <div className="font-bold">
@@ -121,7 +180,9 @@ export default function AdminPage() {
           disabled={isSaving}
           className="w-full rounded-2xl bg-yellow-400 text-blue-950 font-black text-2xl py-5 disabled:opacity-50"
         >
-          {isSaving ? "Pubblicazione..." : "Pubblica menu"}
+          {isSaving
+            ? "Pubblicazione..."
+            : "Pubblica menu"}
         </button>
 
         {message && (
