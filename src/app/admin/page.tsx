@@ -19,6 +19,9 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const [fastFoodOpen, setFastFoodOpen] =
+    useState(true);
+
   useEffect(() => {
     async function loadData() {
       const { data: productsData } = await supabase
@@ -30,10 +33,20 @@ export default function AdminPage() {
         .from("active_menu")
         .select("*");
 
+      const { data: settingsData } = await supabase
+        .from("settings")
+        .select("*")
+        .eq("id", 1)
+        .single();
+
       setProducts(productsData || []);
 
       setActiveMenuIds(
         activeMenuData?.map((item) => item.product_id) || []
+      );
+
+      setFastFoodOpen(
+        settingsData?.fast_food_open ?? true
       );
     }
 
@@ -54,38 +67,58 @@ export default function AdminPage() {
     }
   }
 
+  function updatePrice(
+    productId: string,
+    newPrice: string
+  ) {
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id === productId
+          ? {
+              ...product,
+              price: newPrice,
+            }
+          : product
+      )
+    );
+  }
+
   async function publishMenu() {
     setIsSaving(true);
     setMessage("");
 
-    const { error: deleteError } = await supabase
+    for (const product of products) {
+      await supabase
+        .from("products")
+        .update({
+          price: product.price,
+        })
+        .eq("id", product.id);
+    }
+
+    await supabase
       .from("active_menu")
       .delete()
       .neq("product_id", "");
-
-    if (deleteError) {
-      setMessage("Errore durante lo svuotamento del menu.");
-      setIsSaving(false);
-      return;
-    }
 
     if (activeMenuIds.length > 0) {
       const rows = activeMenuIds.map((id) => ({
         product_id: id,
       }));
 
-      const { error: insertError } = await supabase
+      await supabase
         .from("active_menu")
         .insert(rows);
-
-      if (insertError) {
-        setMessage("Errore durante il salvataggio del menu.");
-        setIsSaving(false);
-        return;
-      }
     }
 
-    setMessage("Menu pubblicato correttamente.");
+    await supabase
+      .from("settings")
+      .update({
+        fast_food_open: fastFoodOpen,
+      })
+      .eq("id", 1);
+
+    setMessage("Menu pubblicato.");
     setIsSaving(false);
   }
 
@@ -141,36 +174,60 @@ export default function AdminPage() {
           Gestione Menu Cucina
         </h1>
 
-        <p className="mb-8 text-blue-100">
-          Seleziona i prodotti disponibili e poi premi
-          Pubblica.
-        </p>
+        <div className="mb-8 bg-blue-800 rounded-3xl p-6">
+          <button
+            onClick={() =>
+              setFastFoodOpen(!fastFoodOpen)
+            }
+            className={`w-full rounded-2xl py-5 text-2xl font-black ${
+              fastFoodOpen
+                ? "bg-green-600"
+                : "bg-red-600"
+            }`}
+          >
+            {fastFoodOpen
+              ? "FAST FOOD APERTO"
+              : "FAST FOOD CHIUSO"}
+          </button>
+        </div>
 
-        <div className="bg-blue-800 rounded-3xl p-6 space-y-4 mb-8">
+        <div className="bg-blue-800 rounded-3xl p-6 space-y-6 mb-8">
           {products.map((product) => {
             const isActive =
               activeMenuIds.includes(product.id);
 
             return (
-              <button
+              <div
                 key={product.id}
-                onClick={() =>
-                  toggleProduct(product.id)
-                }
-                className={`w-full p-4 rounded-2xl text-left transition ${
-                  isActive
-                    ? "bg-green-600"
-                    : "bg-blue-700"
-                }`}
+                className="bg-blue-700 rounded-2xl p-4"
               >
-                <div className="font-bold">
-                  {product.name}
-                </div>
+                <button
+                  onClick={() =>
+                    toggleProduct(product.id)
+                  }
+                  className={`w-full p-4 rounded-2xl text-left mb-4 ${
+                    isActive
+                      ? "bg-green-600"
+                      : "bg-blue-600"
+                  }`}
+                >
+                  <div className="font-bold text-xl">
+                    {product.name}
+                  </div>
+                </button>
 
-                <div>
-                  {product.price}
-                </div>
-              </button>
+                <input
+                  type="text"
+                  value={product.price}
+                  onChange={(event) =>
+                    updatePrice(
+                      product.id,
+                      event.target.value
+                    )
+                  }
+                  className="w-full rounded-xl p-3 text-black text-xl font-bold"
+                />
+              </div>
             );
           })}
         </div>

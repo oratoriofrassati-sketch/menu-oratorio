@@ -19,6 +19,14 @@ export default async function HomePage() {
     .from("active_menu")
     .select("*");
 
+  const { data: settings } = await supabase
+    .from("settings")
+    .select("*")
+    .eq("id", 1)
+    .single();
+
+  const fastFoodOpen = settings?.fast_food_open ?? true;
+
   const activeIds =
     activeMenu?.map((item) => item.product_id) || [];
 
@@ -26,6 +34,12 @@ export default async function HomePage() {
     products?.filter((product: Product) =>
       activeIds.includes(product.id)
     ) || [];
+
+  const today = new Intl.DateTimeFormat("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(new Date());
 
   return (
     <main className="min-h-screen bg-black flex justify-center">
@@ -40,7 +54,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-blue-950/20" />
 
         <div className="relative z-10">
-          <div className="relative mx-auto mb-12 h-80 w-full max-w-[500px]">
+          <div className="relative mx-auto mb-8 h-72 w-full max-w-[420px]">
             <Image
               src="/fast-food-logo.png"
               alt="Frassati Fast Food"
@@ -50,31 +64,53 @@ export default async function HomePage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10">
-            {activeProducts.map((product: Product) => (
-              <article
-                key={product.id}
-                className="text-center"
-              >
-                <div className="relative mx-auto mb-3 h-32 w-full">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-contain drop-shadow-2xl"
-                  />
-                </div>
+          {fastFoodOpen ? (
+            <>
+              <p className="mb-10 text-center text-2xl font-black uppercase tracking-wide drop-shadow-xl">
+                Menu di oggi {today}
+              </p>
 
-                <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                  {product.name}
-                </h2>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-10">
+                {activeProducts.map((product: Product) => (
+                  <article
+                    key={product.id}
+                    className="text-center"
+                  >
+                    <div className="relative mx-auto mb-3 h-32 w-full">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
+                    </div>
 
-                <p className="mt-2 text-2xl font-black drop-shadow-lg">
-                  {product.price}
-                </p>
-              </article>
-            ))}
-          </div>
+                    <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
+                      {product.name}
+                    </h2>
+
+                    <p className="mt-2 text-2xl font-black drop-shadow-lg">
+                      {product.price}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="mt-16 rounded-[2rem] bg-white/95 px-8 py-12 text-center text-[#12377a] shadow-2xl">
+              <p className="text-4xl font-black uppercase leading-tight">
+                Questa sera
+                <br />
+                il Fast Food
+                <br />
+                è chiuso
+              </p>
+
+              <p className="mt-6 text-xl font-bold">
+                Vi aspettiamo alla prossima serata!
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </main>
