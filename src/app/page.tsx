@@ -40,7 +40,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-blue-950/20" />
 
         <div className="relative z-10">
-          <div className="relative mx-auto mb-8 h-44 w-72">
+          <div className="relative mx-auto mb-12 h-80 w-full max-w-[500px]">
             <Image
               src="/fast-food-logo.png"
               alt="Frassati Fast Food"
