@@ -25,8 +25,21 @@ export default function AdminPage() {
     async function loadData() {
       const { data: productsData } = await supabase
         .from("products")
-        .select("*")
-        .order("name");
+        .select("*");
+
+      const sortedProducts =
+        (productsData || []).sort((a, b) => {
+          const aIsLast =
+            a.id === "frutta" || a.id === "dolce";
+
+          const bIsLast =
+            b.id === "frutta" || b.id === "dolce";
+
+          if (aIsLast && !bIsLast) return 1;
+          if (!aIsLast && bIsLast) return -1;
+
+          return a.name.localeCompare(b.name);
+        });
 
       const { data: activeMenuData } = await supabase
         .from("active_menu")
@@ -38,10 +51,12 @@ export default function AdminPage() {
         .eq("id", 1)
         .single();
 
-      setProducts(productsData || []);
+      setProducts(sortedProducts);
+
       setActiveMenuIds(
         activeMenuData?.map((item) => item.product_id) || []
       );
+
       setFastFoodOpen(settingsData?.fast_food_open ?? true);
     }
 
@@ -83,7 +98,7 @@ export default function AdminPage() {
         .eq("id", product.id);
 
       if (error) {
-        setMessage(`Errore prezzo ${product.name}: ${error.message}`);
+        setMessage(`Errore prezzo ${product.name}`);
         setIsSaving(false);
         return;
       }
@@ -95,7 +110,7 @@ export default function AdminPage() {
       .neq("product_id", "");
 
     if (deleteError) {
-      setMessage(`Errore svuotamento menu: ${deleteError.message}`);
+      setMessage("Errore svuotamento menu.");
       setIsSaving(false);
       return;
     }
@@ -110,7 +125,7 @@ export default function AdminPage() {
         .insert(rows);
 
       if (insertError) {
-        setMessage(`Errore inserimento menu: ${insertError.message}`);
+        setMessage("Errore inserimento menu.");
         setIsSaving(false);
         return;
       }
@@ -124,9 +139,7 @@ export default function AdminPage() {
       });
 
     if (settingsError) {
-      setMessage(
-        `Errore apertura/chiusura: ${settingsError.message}`
-      );
+      setMessage("Errore apertura/chiusura.");
       setIsSaving(false);
       return;
     }
@@ -193,8 +206,8 @@ export default function AdminPage() {
         </h1>
 
         <p className="mb-8 text-blue-100">
-          Seleziona i prodotti disponibili, modifica i prezzi e poi premi
-          Pubblica.
+          Seleziona i prodotti disponibili,
+          modifica i prezzi e poi premi Pubblica.
         </p>
 
         <div className="mb-8 bg-blue-800 rounded-3xl p-6">
@@ -204,20 +217,15 @@ export default function AdminPage() {
               setMessage("");
             }}
             className={`w-full rounded-2xl py-5 text-2xl font-black ${
-              fastFoodOpen ? "bg-green-600" : "bg-red-600"
+              fastFoodOpen
+                ? "bg-green-600"
+                : "bg-red-600"
             }`}
           >
             {fastFoodOpen
               ? "FAST FOOD APERTO"
               : "FAST FOOD CHIUSO"}
           </button>
-
-          <p className="mt-4 text-center text-blue-100">
-            Stato attuale:{" "}
-            <strong>
-              {fastFoodOpen ? "aperto" : "chiuso"}
-            </strong>
-          </p>
         </div>
 
         <div className="bg-blue-800 rounded-3xl p-6 space-y-6 mb-8">
@@ -266,14 +274,24 @@ export default function AdminPage() {
           disabled={isSaving}
           className="w-full rounded-2xl bg-yellow-400 text-blue-950 font-black text-2xl py-5 disabled:opacity-50"
         >
-          {isSaving ? "Pubblicazione..." : "Pubblica menu"}
+          {isSaving
+            ? "Pubblicazione..."
+            : "Pubblica menu"}
         </button>
 
         {message && (
-          <p className="mt-6 text-xl font-bold">
+          <p className="mt-6 text-xl font-bold text-center">
             {message}
           </p>
         )}
+
+        <a
+          href="/"
+          target="_blank"
+          className="block mt-10 text-center text-2xl font-black underline"
+        >
+          Apri volantino menu
+        </a>
       </div>
     </main>
   );
