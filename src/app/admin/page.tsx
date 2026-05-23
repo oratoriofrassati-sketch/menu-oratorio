@@ -13,14 +13,13 @@ type Product = {
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeMenuIds, setActiveMenuIds] = useState<string[]>([]);
+  const [fastFoodOpen, setFastFoodOpen] = useState(true);
+
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
 
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const [fastFoodOpen, setFastFoodOpen] =
-    useState(true);
 
   useEffect(() => {
     async function loadData() {
@@ -40,14 +39,10 @@ export default function AdminPage() {
         .single();
 
       setProducts(productsData || []);
-
       setActiveMenuIds(
         activeMenuData?.map((item) => item.product_id) || []
       );
-
-      setFastFoodOpen(
-        settingsData?.fast_food_open ?? true
-      );
+      setFastFoodOpen(settingsData?.fast_food_open ?? true);
     }
 
     if (isLoggedIn) {
@@ -67,17 +62,11 @@ export default function AdminPage() {
     }
   }
 
-  function updatePrice(
-    productId: string,
-    newPrice: string
-  ) {
+  function updatePrice(productId: string, newPrice: string) {
     setProducts((prev) =>
       prev.map((product) =>
         product.id === productId
-          ? {
-              ...product,
-              price: newPrice,
-            }
+          ? { ...product, price: newPrice }
           : product
       )
     );
@@ -88,37 +77,66 @@ export default function AdminPage() {
     setMessage("");
 
     for (const product of products) {
-      await supabase
+      const { error } = await supabase
         .from("products")
-        .update({
-          price: product.price,
-        })
+        .update({ price: product.price })
         .eq("id", product.id);
+
+      if (error) {
+        setMessage(`Errore prezzo ${product.name}: ${error.message}`);
+        setIsSaving(false);
+        return;
+      }
     }
 
-    await supabase
+    const { error: deleteError } = await supabase
       .from("active_menu")
       .delete()
       .neq("product_id", "");
+
+    if (deleteError) {
+      setMessage(`Errore svuotamento menu: ${deleteError.message}`);
+      setIsSaving(false);
+      return;
+    }
 
     if (activeMenuIds.length > 0) {
       const rows = activeMenuIds.map((id) => ({
         product_id: id,
       }));
 
-      await supabase
+      const { error: insertError } = await supabase
         .from("active_menu")
         .insert(rows);
+
+      if (insertError) {
+        setMessage(`Errore inserimento menu: ${insertError.message}`);
+        setIsSaving(false);
+        return;
+      }
     }
 
-    await supabase
+    const { error: settingsError } = await supabase
       .from("settings")
-      .update({
+      .upsert({
+        id: 1,
         fast_food_open: fastFoodOpen,
-      })
-      .eq("id", 1);
+      });
 
-    setMessage("Menu pubblicato.");
+    if (settingsError) {
+      setMessage(
+        `Errore apertura/chiusura: ${settingsError.message}`
+      );
+      setIsSaving(false);
+      return;
+    }
+
+    setMessage(
+      fastFoodOpen
+        ? "Menu pubblicato. Fast Food aperto."
+        : "Menu pubblicato. Fast Food chiuso."
+    );
+
     setIsSaving(false);
   }
 
@@ -174,21 +192,32 @@ export default function AdminPage() {
           Gestione Menu Cucina
         </h1>
 
+        <p className="mb-8 text-blue-100">
+          Seleziona i prodotti disponibili, modifica i prezzi e poi premi
+          Pubblica.
+        </p>
+
         <div className="mb-8 bg-blue-800 rounded-3xl p-6">
           <button
-            onClick={() =>
-              setFastFoodOpen(!fastFoodOpen)
-            }
+            onClick={() => {
+              setFastFoodOpen(!fastFoodOpen);
+              setMessage("");
+            }}
             className={`w-full rounded-2xl py-5 text-2xl font-black ${
-              fastFoodOpen
-                ? "bg-green-600"
-                : "bg-red-600"
+              fastFoodOpen ? "bg-green-600" : "bg-red-600"
             }`}
           >
             {fastFoodOpen
               ? "FAST FOOD APERTO"
               : "FAST FOOD CHIUSO"}
           </button>
+
+          <p className="mt-4 text-center text-blue-100">
+            Stato attuale:{" "}
+            <strong>
+              {fastFoodOpen ? "aperto" : "chiuso"}
+            </strong>
+          </p>
         </div>
 
         <div className="bg-blue-800 rounded-3xl p-6 space-y-6 mb-8">
@@ -237,9 +266,7 @@ export default function AdminPage() {
           disabled={isSaving}
           className="w-full rounded-2xl bg-yellow-400 text-blue-950 font-black text-2xl py-5 disabled:opacity-50"
         >
-          {isSaving
-            ? "Pubblicazione..."
-            : "Pubblica menu"}
+          {isSaving ? "Pubblicazione..." : "Pubblica menu"}
         </button>
 
         {message && (
