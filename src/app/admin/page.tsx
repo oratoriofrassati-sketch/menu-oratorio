@@ -19,10 +19,15 @@ export default function AdminPage() {
   const [message, setMessage] = useState("");
 
   const [password, setPassword] = useState("");
-const [isLoggedIn, setIsLoggedIn] = useState(
-  typeof window !== "undefined" &&
-    localStorage.getItem("fast-food-admin") === "ok"
-);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem("fast-food-admin");
+
+    if (savedLogin === "ok") {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -30,19 +35,15 @@ const [isLoggedIn, setIsLoggedIn] = useState(
         .from("products")
         .select("*");
 
-      const sortedProducts =
-        (productsData || []).sort((a, b) => {
-          const aIsLast =
-            a.id === "frutta" || a.id === "dolce";
+      const sortedProducts = (productsData || []).sort((a, b) => {
+        const aIsLast = a.id === "frutta" || a.id === "dolce";
+        const bIsLast = b.id === "frutta" || b.id === "dolce";
 
-          const bIsLast =
-            b.id === "frutta" || b.id === "dolce";
+        if (aIsLast && !bIsLast) return 1;
+        if (!aIsLast && bIsLast) return -1;
 
-          if (aIsLast && !bIsLast) return 1;
-          if (!aIsLast && bIsLast) return -1;
-
-          return a.name.localeCompare(b.name);
-        });
+        return a.name.localeCompare(b.name);
+      });
 
       const { data: activeMenuData } = await supabase
         .from("active_menu")
@@ -156,6 +157,22 @@ const [isLoggedIn, setIsLoggedIn] = useState(
     setIsSaving(false);
   }
 
+  function login() {
+    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      localStorage.setItem("fast-food-admin", "ok");
+      setIsLoggedIn(true);
+      setMessage("");
+    } else {
+      setMessage("Password errata.");
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("fast-food-admin");
+    setIsLoggedIn(false);
+    setPassword("");
+  }
+
   if (!isLoggedIn) {
     return (
       <main className="min-h-screen bg-blue-900 text-white p-8 flex items-center justify-center">
@@ -170,23 +187,17 @@ const [isLoggedIn, setIsLoggedIn] = useState(
             onChange={(event) =>
               setPassword(event.target.value)
             }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                login();
+              }
+            }}
             placeholder="Password"
             className="w-full rounded-xl p-4 text-black mb-4"
           />
 
           <button
-            onClick={() => {
-              if (
-                password ===
-                process.env.NEXT_PUBLIC_ADMIN_PASSWORD
-              ) {
-                setIsLoggedIn(true);
-                localStorage.setItem("fast-food-admin", "ok");
-                setMessage("");
-              } else {
-                setMessage("Password errata.");
-              }
-            }}
+            onClick={login}
             className="w-full rounded-2xl bg-yellow-400 text-blue-950 font-black text-xl py-4"
           >
             Entra
@@ -205,14 +216,25 @@ const [isLoggedIn, setIsLoggedIn] = useState(
   return (
     <main className="min-h-screen bg-blue-900 text-white p-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-5xl font-black mb-4">
-          Gestione Menu Cucina
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-5xl font-black mb-4">
+              Gestione Menu Cucina
+            </h1>
 
-        <p className="mb-8 text-blue-100">
-          Seleziona i prodotti disponibili,
-          modifica i prezzi e poi premi Pubblica.
-        </p>
+            <p className="text-blue-100">
+              Seleziona i prodotti disponibili, modifica i prezzi e poi premi
+              Pubblica.
+            </p>
+          </div>
+
+          <button
+            onClick={logout}
+            className="rounded-xl bg-blue-700 px-4 py-2 font-bold"
+          >
+            Esci
+          </button>
+        </div>
 
         <div className="mb-8 bg-blue-800 rounded-3xl p-6">
           <button
