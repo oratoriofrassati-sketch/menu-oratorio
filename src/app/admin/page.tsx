@@ -9,6 +9,7 @@ type Product = {
   price: string;
   image: string;
   sort_order: number;
+  quantity: string | null;
 };
 
 export default function AdminPage() {
@@ -93,6 +94,16 @@ export default function AdminPage() {
     );
   }
 
+  function updateQuantity(productId: string, newQuantity: string) {
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id === productId
+          ? { ...product, quantity: newQuantity }
+          : product
+      )
+    );
+  }
+
   function moveProductUp(index: number) {
     if (index === 0) return;
 
@@ -130,12 +141,13 @@ export default function AdminPage() {
         .from("products")
         .update({
           price: product.price,
+          quantity: product.quantity || "",
           sort_order: index * 10,
         })
         .eq("id", product.id);
 
       if (error) {
-        setMessage(`Errore prezzo/ordine ${product.name}`);
+        setMessage(`Errore prezzo/quantità/ordine ${product.name}`);
         setIsSaving(false);
         return;
       }
@@ -210,16 +222,12 @@ export default function AdminPage() {
     return (
       <main className="min-h-screen bg-blue-900 text-white p-8 flex items-center justify-center">
         <div className="bg-blue-800 rounded-3xl p-8 w-full max-w-md">
-          <h1 className="text-4xl font-black mb-6">
-            Accesso cucina
-          </h1>
+          <h1 className="text-4xl font-black mb-6">Accesso cucina</h1>
 
           <input
             type="password"
             value={password}
-            onChange={(event) =>
-              setPassword(event.target.value)
-            }
+            onChange={(event) => setPassword(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 login();
@@ -236,11 +244,7 @@ export default function AdminPage() {
             Entra
           </button>
 
-          {message && (
-            <p className="mt-4 font-bold">
-              {message}
-            </p>
-          )}
+          {message && <p className="mt-4 font-bold">{message}</p>}
         </div>
       </main>
     );
@@ -256,7 +260,7 @@ export default function AdminPage() {
             </h1>
 
             <p className="text-blue-100">
-              Seleziona i prodotti disponibili, modifica i prezzi,
+              Seleziona i prodotti disponibili, modifica prezzi e quantità,
               ordina le voci e poi premi Pubblica.
             </p>
           </div>
@@ -279,16 +283,13 @@ export default function AdminPage() {
               fastFoodOpen ? "bg-green-600" : "bg-red-600"
             }`}
           >
-            {fastFoodOpen
-              ? "FAST FOOD APERTO"
-              : "FAST FOOD CHIUSO"}
+            {fastFoodOpen ? "FAST FOOD APERTO" : "FAST FOOD CHIUSO"}
           </button>
         </div>
 
         <div className="bg-blue-800 rounded-3xl p-6 space-y-6 mb-8">
           {products.map((product, index) => {
-            const isActive =
-              activeMenuIds.includes(product.id);
+            const isActive = activeMenuIds.includes(product.id);
 
             return (
               <div
@@ -314,29 +315,42 @@ export default function AdminPage() {
                 </div>
 
                 <button
-                  onClick={() =>
-                    toggleProduct(product.id)
-                  }
+                  onClick={() => toggleProduct(product.id)}
                   className={`w-full p-4 rounded-2xl text-left mb-4 ${
                     isActive ? "bg-green-600" : "bg-blue-600"
                   }`}
                 >
-                  <div className="font-bold text-xl">
-                    {product.name}
-                  </div>
+                  <div className="font-bold text-xl">{product.name}</div>
                 </button>
 
-                <input
-                  type="text"
-                  value={product.price}
-                  onChange={(event) =>
-                    updatePrice(
-                      product.id,
-                      event.target.value
-                    )
-                  }
-                  className="w-full rounded-xl p-3 text-black text-xl font-bold"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block mb-1 font-bold">Prezzo</label>
+                    <input
+                      type="text"
+                      value={product.price}
+                      onChange={(event) =>
+                        updatePrice(product.id, event.target.value)
+                      }
+                      className="w-full rounded-xl p-3 text-black text-xl font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-bold">
+                      Quantità disponibile
+                    </label>
+                    <input
+                      type="text"
+                      value={product.quantity || ""}
+                      onChange={(event) =>
+                        updateQuantity(product.id, event.target.value)
+                      }
+                      placeholder="Es. 40"
+                      className="w-full rounded-xl p-3 text-black text-xl font-bold"
+                    />
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -347,15 +361,11 @@ export default function AdminPage() {
           disabled={isSaving}
           className="w-full rounded-2xl bg-yellow-400 text-blue-950 font-black text-2xl py-5 disabled:opacity-50"
         >
-          {isSaving
-            ? "Pubblicazione..."
-            : "Pubblica menu"}
+          {isSaving ? "Pubblicazione..." : "Pubblica menu"}
         </button>
 
         {message && (
-          <p className="mt-6 text-xl font-bold text-center">
-            {message}
-          </p>
+          <p className="mt-6 text-xl font-bold text-center">{message}</p>
         )}
 
         <a
