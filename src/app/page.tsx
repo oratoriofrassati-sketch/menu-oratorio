@@ -56,7 +56,7 @@ export default async function HomePage() {
       >
         <div className="absolute inset-0 bg-blue-950/20" />
 
-        <div className="relative z-10">
+       className="relative z-10 font-[family-name:var(--font-love)]"
           <div className="relative mx-auto mb-8 h-72 w-full max-w-[420px]">
             <Image
               src="/fast-food-logo.png"
@@ -69,9 +69,15 @@ export default async function HomePage() {
 
           {fastFoodOpen ? (
             <>
-              <p className="mb-10 text-center text-2xl font-black uppercase tracking-wide drop-shadow-xl">
-                Menu di oggi {today}
-              </p>
+<div className="mb-10 text-center drop-shadow-xl">
+  <p className="text-3xl font-black uppercase">
+    Menu di oggi
+  </p>
+
+  <p className="text-2xl font-black uppercase mt-2">
+    {today}
+  </p>
+</div>
 
               <div className="grid grid-cols-2 gap-x-6 gap-y-10">
                 {activeProducts.map((product: Product) => (

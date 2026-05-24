@@ -19,7 +19,10 @@ export default function AdminPage() {
   const [message, setMessage] = useState("");
 
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [isLoggedIn, setIsLoggedIn] = useState(
+  typeof window !== "undefined" &&
+    localStorage.getItem("fast-food-admin") === "ok"
+);
 
   useEffect(() => {
     async function loadData() {
@@ -178,6 +181,7 @@ export default function AdminPage() {
                 process.env.NEXT_PUBLIC_ADMIN_PASSWORD
               ) {
                 setIsLoggedIn(true);
+                localStorage.setItem("fast-food-admin", "ok");
                 setMessage("");
               } else {
                 setMessage("Password errata.");
