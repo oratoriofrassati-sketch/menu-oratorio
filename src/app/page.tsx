@@ -12,9 +12,10 @@ type Product = {
 };
 
 export default async function HomePage() {
-  const { data: products } = await supabase
-    .from("products")
-    .select("*");
+const { data: products } = await supabase
+  .from("products")
+  .select("*")
+  .order("sort_order", { ascending: true });
 
   const { data: activeMenu } = await supabase
     .from("active_menu")
