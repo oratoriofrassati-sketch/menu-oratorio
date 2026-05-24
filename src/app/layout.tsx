@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Love_Ya_Like_A_Sister } from "next/font/google";
+import { Caveat_Brush } from "next/font/google";
+
 import "./globals.css";
 
-const loveYaLikeASister = Love_Ya_Like_A_Sister({
+const caveatBrush = Caveat_Brush({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-love",
+  variable: "--font-caveat",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it">
-      <body className={loveYaLikeASister.variable}>
+      <body className={caveatBrush.variable}>
         {children}
       </body>
     </html>

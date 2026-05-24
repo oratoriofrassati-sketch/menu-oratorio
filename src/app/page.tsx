@@ -55,7 +55,7 @@ export default async function HomePage() {
       >
         <div className="absolute inset-0 bg-blue-950/20" />
 
-        <div className="relative z-10 font-[family-name:var(--font-love)]">
+        <div className="relative z-10 font-[family-name:var(--font-caveat)]">
           <div className="relative mx-auto mb-8 h-72 w-full max-w-[420px]">
             <Image
               src="/fast-food-logo.png"
