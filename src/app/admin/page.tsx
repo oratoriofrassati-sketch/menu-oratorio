@@ -8,6 +8,7 @@ type Product = {
   name: string;
   price: string;
   image: string;
+  sort_order: number;
 };
 
 export default function AdminPage() {
@@ -33,7 +34,8 @@ export default function AdminPage() {
     async function loadData() {
       const { data: productsData } = await supabase
         .from("products")
-        .select("*");
+        .select("*")
+        .order("sort_order", { ascending: true });
 
       const sortedProducts = (productsData || []).sort((a, b) => {
         const aIsLast = a.id === "frutta" || a.id === "dolce";
@@ -42,7 +44,7 @@ export default function AdminPage() {
         if (aIsLast && !bIsLast) return 1;
         if (!aIsLast && bIsLast) return -1;
 
-        return a.name.localeCompare(b.name);
+        return (a.sort_order ?? 0) - (b.sort_order ?? 0);
       });
 
       const { data: activeMenuData } = await supabase
@@ -91,18 +93,49 @@ export default function AdminPage() {
     );
   }
 
+  function moveProductUp(index: number) {
+    if (index === 0) return;
+
+    const updated = [...products];
+
+    [updated[index - 1], updated[index]] = [
+      updated[index],
+      updated[index - 1],
+    ];
+
+    setProducts(updated);
+    setMessage("");
+  }
+
+  function moveProductDown(index: number) {
+    if (index === products.length - 1) return;
+
+    const updated = [...products];
+
+    [updated[index + 1], updated[index]] = [
+      updated[index],
+      updated[index + 1],
+    ];
+
+    setProducts(updated);
+    setMessage("");
+  }
+
   async function publishMenu() {
     setIsSaving(true);
     setMessage("");
 
-    for (const product of products) {
+    for (const [index, product] of products.entries()) {
       const { error } = await supabase
         .from("products")
-        .update({ price: product.price })
+        .update({
+          price: product.price,
+          sort_order: index * 10,
+        })
         .eq("id", product.id);
 
       if (error) {
-        setMessage(`Errore prezzo ${product.name}`);
+        setMessage(`Errore prezzo/ordine ${product.name}`);
         setIsSaving(false);
         return;
       }
@@ -223,8 +256,8 @@ export default function AdminPage() {
             </h1>
 
             <p className="text-blue-100">
-              Seleziona i prodotti disponibili, modifica i prezzi e poi premi
-              Pubblica.
+              Seleziona i prodotti disponibili, modifica i prezzi,
+              ordina le voci e poi premi Pubblica.
             </p>
           </div>
 
@@ -243,9 +276,7 @@ export default function AdminPage() {
               setMessage("");
             }}
             className={`w-full rounded-2xl py-5 text-2xl font-black ${
-              fastFoodOpen
-                ? "bg-green-600"
-                : "bg-red-600"
+              fastFoodOpen ? "bg-green-600" : "bg-red-600"
             }`}
           >
             {fastFoodOpen
@@ -255,7 +286,7 @@ export default function AdminPage() {
         </div>
 
         <div className="bg-blue-800 rounded-3xl p-6 space-y-6 mb-8">
-          {products.map((product) => {
+          {products.map((product, index) => {
             const isActive =
               activeMenuIds.includes(product.id);
 
@@ -264,14 +295,30 @@ export default function AdminPage() {
                 key={product.id}
                 className="bg-blue-700 rounded-2xl p-4"
               >
+                <div className="flex gap-2 mb-3">
+                  <button
+                    onClick={() => moveProductUp(index)}
+                    disabled={index === 0}
+                    className="bg-yellow-400 text-black rounded-lg px-4 py-2 font-black disabled:opacity-40"
+                  >
+                    ↑
+                  </button>
+
+                  <button
+                    onClick={() => moveProductDown(index)}
+                    disabled={index === products.length - 1}
+                    className="bg-yellow-400 text-black rounded-lg px-4 py-2 font-black disabled:opacity-40"
+                  >
+                    ↓
+                  </button>
+                </div>
+
                 <button
                   onClick={() =>
                     toggleProduct(product.id)
                   }
                   className={`w-full p-4 rounded-2xl text-left mb-4 ${
-                    isActive
-                      ? "bg-green-600"
-                      : "bg-blue-600"
+                    isActive ? "bg-green-600" : "bg-blue-600"
                   }`}
                 >
                   <div className="font-bold text-xl">
