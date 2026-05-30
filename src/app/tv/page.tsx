@@ -38,12 +38,26 @@ export default async function TvPage() {
       activeIds.includes(product.id)
     ) || [];
 
-  const comboProducts = activeProducts.filter((product: Product) =>
-    product.id.startsWith("combo-")
+  const comboProducts = activeProducts.filter(
+    (product: Product) =>
+      product.id.startsWith("combo-")
   );
 
-  const normalProducts = activeProducts.filter(
-    (product: Product) => !product.id.startsWith("combo-")
+  const frittiDessertProducts = activeProducts.filter(
+    (product: Product) =>
+      product.id === "patatine" ||
+      product.id === "nuggets-pollo" ||
+      product.id === "frutta" ||
+      product.id === "dolce"
+  );
+
+  const mainProducts = activeProducts.filter(
+    (product: Product) =>
+      !product.id.startsWith("combo-") &&
+      product.id !== "patatine" &&
+      product.id !== "nuggets-pollo" &&
+      product.id !== "frutta" &&
+      product.id !== "dolce"
   );
 
   const today = new Intl.DateTimeFormat("it-IT", {
@@ -54,7 +68,7 @@ export default async function TvPage() {
   }).format(new Date());
 
   return (
-    <main className="min-h-screen bg-black flex items-center justify-center">
+    <main className="min-h-screen bg-black flex items-center justify-center overflow-hidden">
       <section
         className="relative aspect-video w-full max-w-[1920px] overflow-hidden text-white"
         style={{
@@ -63,69 +77,109 @@ export default async function TvPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="absolute inset-0 bg-blue-950/20" />
+        <div className="absolute inset-0 bg-black/25" />
 
-        <div className="relative z-10 h-full px-10 py-8 font-[family-name:var(--font-caveat)]">
-          <div className="grid h-full grid-cols-[300px_1fr] gap-8">
-            <aside className="flex flex-col justify-center">
-              <div className="relative h-60 w-full">
-                <Image
-                  src="/fast-food-logo.png"
-                  alt="Frassati Fast Food"
-                  fill
-                  priority
-                  className="object-contain drop-shadow-2xl"
-                />
-              </div>
+        <div className="relative z-10 h-full px-10 py-6 font-[family-name:var(--font-caveat)]">
+          {fastFoodOpen ? (
+            <div className="flex h-full flex-col">
+              {/* HEADER */}
 
-              <div className="mt-8 text-center drop-shadow-xl">
-                <p className="text-4xl font-black uppercase">
-                  Menu di oggi
-                </p>
-
-                <p className="mt-2 text-3xl font-black uppercase">
-                  {today}
-                </p>
-              </div>
-            </aside>
-
-            {fastFoodOpen ? (
-              <div className="grid h-full grid-rows-[1fr_auto] gap-4">
-                <div className="grid grid-cols-4 gap-x-7 gap-y-3">
-                  {normalProducts.map((product: Product) => (
-                    <article
-                      key={product.id}
-                      className="text-center"
-                    >
-                      <div className="relative mx-auto h-28 w-full">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-contain drop-shadow-2xl"
-                        />
-                      </div>
-
-                      <h2 className="mt-1 text-[1.65rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
-                        {product.name}
-                      </h2>
-
-                      <p className="mt-1 text-4xl font-black drop-shadow-lg">
-                        {product.price}
-                      </p>
-                    </article>
-                  ))}
+              <header className="mb-2 flex items-center justify-between">
+                <div className="relative h-36 w-72">
+                  <Image
+                    src="/fast-food-logo.png"
+                    alt="Frassati Fast Food"
+                    fill
+                    priority
+                    className="object-contain drop-shadow-2xl"
+                  />
                 </div>
 
-                {comboProducts.length > 0 && (
-                  <div className="border-t-4 border-white/60 pt-3">
-                    <div className="grid grid-cols-2 gap-8">
-                      {comboProducts.map((product: Product) => (
+                <div className="text-right drop-shadow-xl">
+                  <p className="text-5xl font-black uppercase">
+                    Menu di oggi
+                  </p>
+
+                  <p className="mt-1 text-4xl font-black uppercase">
+                    {today}
+                  </p>
+                </div>
+              </header>
+
+              {/* PANINI PRINCIPALI */}
+
+              <div className="grid flex-1 grid-cols-4 gap-x-6 gap-y-2">
+                {mainProducts.map((product: Product) => (
+                  <article
+                    key={product.id}
+                    className="text-center"
+                  >
+                    <div className="relative mx-auto h-40 w-full">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
+                    </div>
+
+                    <h2 className="mt-1 text-[2rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
+                      {product.name}
+                    </h2>
+
+                    <p className="mt-1 text-5xl font-black drop-shadow-lg">
+                      {product.price}
+                    </p>
+                  </article>
+                ))}
+              </div>
+
+              {/* FRITTI + DESSERT */}
+
+              {frittiDessertProducts.length > 0 && (
+                <div className="mt-2 flex items-center justify-center gap-10">
+                  {frittiDessertProducts.map(
+                    (product: Product) => (
+                      <article
+                        key={product.id}
+                        className="flex items-center gap-3"
+                      >
+                        <div className="relative h-20 w-20">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-contain drop-shadow-xl"
+                          />
+                        </div>
+
+                        <div>
+                          <p className="text-2xl font-black uppercase leading-none">
+                            {product.name}
+                          </p>
+
+                          <p className="text-3xl font-black">
+                            {product.price}
+                          </p>
+                        </div>
+                      </article>
+                    )
+                  )}
+                </div>
+              )}
+
+              {/* COMBO */}
+
+              {comboProducts.length > 0 && (
+                <div className="mt-4 rounded-[2rem] border-4 border-yellow-300/70 bg-black/35 px-8 py-4">
+                  <div className="grid grid-cols-2 gap-10">
+                    {comboProducts.map(
+                      (product: Product) => (
                         <article
                           key={product.id}
-                          className="grid grid-cols-[1fr_auto] items-center gap-4"
+                          className="flex items-center gap-6"
                         >
-                          <div className="relative h-36 w-full">
+                          <div className="relative h-52 w-72 shrink-0">
                             <Image
                               src={product.image}
                               alt={product.name}
@@ -134,33 +188,39 @@ export default async function TvPage() {
                             />
                           </div>
 
-                          <p className="text-5xl font-black drop-shadow-lg">
-                            {product.price}
-                          </p>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <div className="rounded-[2rem] bg-white/95 px-16 py-14 text-center text-[#12377a] shadow-2xl">
-                  <p className="text-7xl font-black uppercase leading-tight">
-                    Questa sera
-                    <br />
-                    il Fast Food
-                    <br />
-                    è chiuso
-                  </p>
+                          <div>
+                            <p className="text-6xl font-black uppercase leading-none drop-shadow-xl">
+                              Menu Combo
+                            </p>
 
-                  <p className="mt-8 text-4xl font-bold">
-                    Vi aspettiamo alla prossima serata!
-                  </p>
+                            <p className="mt-4 text-7xl font-black text-yellow-300 drop-shadow-xl">
+                              {product.price}
+                            </p>
+                          </div>
+                        </article>
+                      )
+                    )}
+                  </div>
                 </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <div className="rounded-[2rem] bg-white/95 px-16 py-14 text-center text-[#12377a] shadow-2xl">
+                <p className="text-7xl font-black uppercase leading-tight">
+                  Questa sera
+                  <br />
+                  il Fast Food
+                  <br />
+                  è chiuso
+                </p>
+
+                <p className="mt-8 text-4xl font-bold">
+                  Vi aspettiamo alla prossima serata!
+                </p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </section>
     </main>
