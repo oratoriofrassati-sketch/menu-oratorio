@@ -9,13 +9,14 @@ type Product = {
   name: string;
   price: string;
   image: string;
+  sort_order: number;
 };
 
 export default async function HomePage() {
-const { data: products } = await supabase
-  .from("products")
-  .select("*")
-  .order("sort_order", { ascending: true });
+  const { data: products } = await supabase
+    .from("products")
+    .select("*")
+    .order("sort_order", { ascending: true });
 
   const { data: activeMenu } = await supabase
     .from("active_menu")
@@ -36,6 +37,16 @@ const { data: products } = await supabase
     products?.filter((product: Product) =>
       activeIds.includes(product.id)
     ) || [];
+
+  const comboProducts = activeProducts.filter(
+    (product: Product) =>
+      product.id.startsWith("combo-")
+  );
+
+  const standardProducts = activeProducts.filter(
+    (product: Product) =>
+      !product.id.startsWith("combo-")
+  );
 
   const today = new Intl.DateTimeFormat("it-IT", {
     weekday: "long",
@@ -80,7 +91,7 @@ const { data: products } = await supabase
               </div>
 
               <div className="grid grid-cols-2 gap-x-6 gap-y-10">
-                {activeProducts.map((product: Product) => (
+                {standardProducts.map((product: Product) => (
                   <article
                     key={product.id}
                     className="text-center"
@@ -104,6 +115,40 @@ const { data: products } = await supabase
                   </article>
                 ))}
               </div>
+
+              {comboProducts.length > 0 && (
+                <div className="mt-12 border-t-4 border-white/70 pt-8">
+                  <p className="mb-6 text-center text-3xl font-black uppercase drop-shadow-xl">
+                    Menu Combo
+                  </p>
+
+                  <div className="grid grid-cols-1 gap-8">
+                    {comboProducts.map((product: Product) => (
+                      <article
+                        key={product.id}
+                        className="text-center"
+                      >
+                        <div className="relative mx-auto mb-3 h-40 w-full">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
+
+                        <h2 className="text-[1.7rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
+                          {product.name}
+                        </h2>
+
+                        <p className="mt-2 text-3xl font-black drop-shadow-lg">
+                          {product.price}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="mt-16 rounded-[2rem] bg-white/95 px-8 py-12 text-center text-[#12377a] shadow-2xl">
