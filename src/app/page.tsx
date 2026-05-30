@@ -126,7 +126,7 @@ export default async function HomePage() {
           key={product.id}
           className="text-center"
         >
-          <div className="relative mx-auto mb-1 h-56 w-full">
+          <div className="relative mx-auto mb-2 h-80 w-full">
             <Image
               src={product.image}
               alt={product.name}
@@ -135,7 +135,7 @@ export default async function HomePage() {
             />
           </div>
 
-          <p className="mt-1 text-3xl font-black drop-shadow-lg">
+          <p className="mt-0 text-4xl font-black drop-shadow-lg">
             {product.price}
           </p>
         </article>
