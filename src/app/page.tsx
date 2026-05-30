@@ -115,18 +115,18 @@ export default async function HomePage() {
               </div>
 
 {comboProducts.length > 0 && (
-  <div className="mt-8 border-t-4 border-white/70 pt-6">
-    <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
+  <div className="mt-10 border-t-4 border-white/70 pt-8">
+    <p className="mb-6 text-center text-4xl font-black uppercase drop-shadow-xl">
       Menu Combo
     </p>
 
-    <div className="grid grid-cols-2 gap-4">
+    <div className="flex flex-col gap-10">
       {comboProducts.map((product: Product) => (
         <article
           key={product.id}
           className="text-center"
         >
-          <div className="relative mx-auto mb-2 h-80 w-full">
+          <div className="relative mx-auto mb-2 h-[26rem] w-full">
             <Image
               src={product.image}
               alt={product.name}
@@ -135,7 +135,7 @@ export default async function HomePage() {
             />
           </div>
 
-          <p className="mt-0 text-4xl font-black drop-shadow-lg">
+          <p className="mt-0 text-5xl font-black drop-shadow-lg">
             {product.price}
           </p>
         </article>
