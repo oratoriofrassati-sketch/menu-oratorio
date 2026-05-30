@@ -114,39 +114,35 @@ export default async function HomePage() {
                 ))}
               </div>
 
-              {comboProducts.length > 0 && (
-                <div className="mt-8 border-t-4 border-white/70 pt-6">
-                  <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
-                    Menu Combo
-                  </p>
+{comboProducts.length > 0 && (
+  <div className="mt-8 border-t-4 border-white/70 pt-6">
+    <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
+      Menu Combo
+    </p>
 
-                  <div className="grid grid-cols-1 gap-6">
-                    {comboProducts.map((product: Product) => (
-                      <article
-                        key={product.id}
-                        className="text-center"
-                      >
-                        <div className="relative mx-auto mb-1 h-44 w-full">
-                          <Image
-                            src={product.image}
-                            alt={product.name}
-                            fill
-                            className="object-contain drop-shadow-2xl"
-                          />
-                        </div>
+    <div className="grid grid-cols-2 gap-4">
+      {comboProducts.map((product: Product) => (
+        <article
+          key={product.id}
+          className="text-center"
+        >
+          <div className="relative mx-auto mb-1 h-56 w-full">
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              className="object-contain drop-shadow-2xl"
+            />
+          </div>
 
-                        <h2 className="text-[1.7rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                          {product.name}
-                        </h2>
-
-                        <p className="mt-1 text-3xl font-black drop-shadow-lg">
-                          {product.price}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              )}
+          <p className="mt-1 text-3xl font-black drop-shadow-lg">
+            {product.price}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+)}
             </>
           ) : (
             <div className="mt-16 rounded-[2rem] bg-white/95 px-8 py-12 text-center text-[#12377a] shadow-2xl">
