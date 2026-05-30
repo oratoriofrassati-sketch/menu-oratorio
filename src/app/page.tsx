@@ -39,11 +39,29 @@ export default async function HomePage() {
     ) || [];
 
   const comboProducts = activeProducts.filter(
-    (product: Product) => product.id.startsWith("combo-")
+    (product: Product) =>
+      product.id.startsWith("combo-")
+  );
+
+  const frittiProducts = activeProducts.filter(
+    (product: Product) =>
+      product.id === "patatine" ||
+      product.id === "nuggets-pollo"
+  );
+
+  const dessertProducts = activeProducts.filter(
+    (product: Product) =>
+      product.id === "frutta" ||
+      product.id === "dolce"
   );
 
   const standardProducts = activeProducts.filter(
-    (product: Product) => !product.id.startsWith("combo-")
+    (product: Product) =>
+      !product.id.startsWith("combo-") &&
+      product.id !== "patatine" &&
+      product.id !== "nuggets-pollo" &&
+      product.id !== "frutta" &&
+      product.id !== "dolce"
   );
 
   const today = new Intl.DateTimeFormat("it-IT", {
@@ -88,61 +106,143 @@ export default async function HomePage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                {standardProducts.map((product: Product) => (
-                  <article
-                    key={product.id}
-                    className="text-center"
-                  >
-                    <div className="relative mx-auto mb-0 h-52 w-full">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-contain drop-shadow-2xl"
-                      />
-                    </div>
+              {/* PANINI */}
 
-                    <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                      {product.name}
-                    </h2>
+              <div>
+                <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
+                  Panini
+                </p>
 
-                    <p className="mt-1 text-2xl font-black drop-shadow-lg">
-                      {product.price}
-                    </p>
-                  </article>
-                ))}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                  {standardProducts.map((product: Product) => (
+                    <article
+                      key={product.id}
+                      className="text-center"
+                    >
+                      <div className="relative mx-auto mb-0 h-52 w-full">
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className="object-contain drop-shadow-2xl"
+                        />
+                      </div>
+
+                      <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
+                        {product.name}
+                      </h2>
+
+                      <p className="mt-1 text-2xl font-black drop-shadow-lg">
+                        {product.price}
+                      </p>
+                    </article>
+                  ))}
+                </div>
               </div>
 
-{comboProducts.length > 0 && (
-  <div className="mt-10 border-t-4 border-white/70 pt-8">
-    <p className="mb-6 text-center text-4xl font-black uppercase drop-shadow-xl">
-      Menu Combo
-    </p>
+              {/* FRITTI */}
 
-    <div className="flex flex-col gap-10">
-      {comboProducts.map((product: Product) => (
-        <article
-          key={product.id}
-          className="text-center"
-        >
-          <div className="relative mx-auto mb-2 h-[26rem] w-full">
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              className="object-contain drop-shadow-2xl"
-            />
-          </div>
+              {frittiProducts.length > 0 && (
+                <div className="mt-10">
+                  <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
+                    Fritti
+                  </p>
 
-          <p className="mt-0 text-5xl font-black drop-shadow-lg">
-            {product.price}
-          </p>
-        </article>
-      ))}
-    </div>
-  </div>
-)}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                    {frittiProducts.map((product: Product) => (
+                      <article
+                        key={product.id}
+                        className="text-center"
+                      >
+                        <div className="relative mx-auto mb-0 h-52 w-full">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
+
+                        <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
+                          {product.name}
+                        </h2>
+
+                        <p className="mt-1 text-2xl font-black drop-shadow-lg">
+                          {product.price}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* DESSERT */}
+
+              {dessertProducts.length > 0 && (
+                <div className="mt-10">
+                  <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
+                    Dessert
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                    {dessertProducts.map((product: Product) => (
+                      <article
+                        key={product.id}
+                        className="text-center"
+                      >
+                        <div className="relative mx-auto mb-0 h-52 w-full">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
+
+                        <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
+                          {product.name}
+                        </h2>
+
+                        <p className="mt-1 text-2xl font-black drop-shadow-lg">
+                          {product.price}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* COMBO */}
+
+              {comboProducts.length > 0 && (
+                <div className="mt-10 border-t-4 border-white/70 pt-8">
+                  <p className="mb-6 text-center text-4xl font-black uppercase drop-shadow-xl">
+                    Menu Combo
+                  </p>
+
+                  <div className="flex flex-col gap-10">
+                    {comboProducts.map((product: Product) => (
+                      <article
+                        key={product.id}
+                        className="text-center"
+                      >
+                        <div className="relative mx-auto mb-2 h-[26rem] w-full">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
+
+                        <p className="mt-0 text-5xl font-black drop-shadow-lg">
+                          {product.price}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="mt-16 rounded-[2rem] bg-white/95 px-8 py-12 text-center text-[#12377a] shadow-2xl">
