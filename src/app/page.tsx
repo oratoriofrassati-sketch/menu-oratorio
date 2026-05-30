@@ -39,13 +39,11 @@ export default async function HomePage() {
     ) || [];
 
   const comboProducts = activeProducts.filter(
-    (product: Product) =>
-      product.id.startsWith("combo-")
+    (product: Product) => product.id.startsWith("combo-")
   );
 
   const standardProducts = activeProducts.filter(
-    (product: Product) =>
-      !product.id.startsWith("combo-")
+    (product: Product) => !product.id.startsWith("combo-")
   );
 
   const today = new Intl.DateTimeFormat("it-IT", {
@@ -68,7 +66,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-blue-950/20" />
 
         <div className="relative z-10 font-[family-name:var(--font-caveat)]">
-          className="relative mx-auto mb-0 h-52 w-full"
+          <div className="relative mx-auto mb-4 h-64 w-full max-w-[360px]">
             <Image
               src="/fast-food-logo.png"
               alt="Frassati Fast Food"
@@ -96,7 +94,7 @@ export default async function HomePage() {
                     key={product.id}
                     className="text-center"
                   >
-                    <div className="relative mx-auto mb-1 h-52 w-full">
+                    <div className="relative mx-auto mb-0 h-52 w-full">
                       <Image
                         src={product.image}
                         alt={product.name}
@@ -109,7 +107,7 @@ export default async function HomePage() {
                       {product.name}
                     </h2>
 
-                    <p className="mt-2 text-2xl font-black drop-shadow-lg">
+                    <p className="mt-1 text-2xl font-black drop-shadow-lg">
                       {product.price}
                     </p>
                   </article>
@@ -117,18 +115,18 @@ export default async function HomePage() {
               </div>
 
               {comboProducts.length > 0 && (
-                <div className="mt-12 border-t-4 border-white/70 pt-8">
-                  <p className="mb-6 text-center text-3xl font-black uppercase drop-shadow-xl">
+                <div className="mt-8 border-t-4 border-white/70 pt-6">
+                  <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
                     Menu Combo
                   </p>
 
-                  <div className="grid grid-cols-1 gap-8">
+                  <div className="grid grid-cols-1 gap-6">
                     {comboProducts.map((product: Product) => (
                       <article
                         key={product.id}
                         className="text-center"
                       >
-                        <div className="relative mx-auto mb-3 h-40 w-full">
+                        <div className="relative mx-auto mb-1 h-44 w-full">
                           <Image
                             src={product.image}
                             alt={product.name}
@@ -141,7 +139,7 @@ export default async function HomePage() {
                           {product.name}
                         </h2>
 
-                        <p className="mt-2 text-3xl font-black drop-shadow-lg">
+                        <p className="mt-1 text-3xl font-black drop-shadow-lg">
                           {product.price}
                         </p>
                       </article>
