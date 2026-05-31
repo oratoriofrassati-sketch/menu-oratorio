@@ -12,12 +12,30 @@ type Product = {
   sort_order: number;
 };
 
-type ActivePromotion = {
+type ActivePromotionRow = {
   promotion_id: string;
   full_price: string;
   promo_price: string;
   sort_order: number;
-  promotions: {
+  promotions:
+    | {
+        id: string;
+        name: string;
+        image: string;
+      }
+    | {
+        id: string;
+        name: string;
+        image: string;
+      }[];
+};
+
+type PromotionView = {
+  promotion_id: string;
+  full_price: string;
+  promo_price: string;
+  sort_order: number;
+  promotion: {
     id: string;
     name: string;
     image: string;
@@ -108,7 +126,19 @@ export default async function HomePage() {
       product.id !== "dolce"
   );
 
-  const promotions = (activePromotions || []) as ActivePromotion[];
+  const promotions: PromotionView[] = (
+    (activePromotions || []) as ActivePromotionRow[]
+  )
+    .map((item) => ({
+      promotion_id: item.promotion_id,
+      full_price: item.full_price,
+      promo_price: item.promo_price,
+      sort_order: item.sort_order,
+      promotion: Array.isArray(item.promotions)
+        ? item.promotions[0]
+        : item.promotions,
+    }))
+    .filter((item) => item.promotion);
 
   return (
     <main className="min-h-screen bg-black flex justify-center">
@@ -159,8 +189,8 @@ export default async function HomePage() {
                       >
                         <div className="relative mx-auto mb-2 h-72 w-full">
                           <Image
-                            src={promo.promotions.image}
-                            alt={promo.promotions.name}
+                            src={promo.promotion.image}
+                            alt={promo.promotion.name}
                             fill
                             className="object-contain drop-shadow-2xl"
                           />
