@@ -12,6 +12,18 @@ type Product = {
   sort_order: number;
 };
 
+type ActivePromotion = {
+  promotion_id: string;
+  full_price: string;
+  promo_price: string;
+  sort_order: number;
+  promotions: {
+    id: string;
+    name: string;
+    image: string;
+  };
+};
+
 function formatMenuDate(menuDate?: string | null) {
   const date = menuDate
     ? new Date(`${menuDate}T12:00:00`)
@@ -40,6 +52,24 @@ export default async function HomePage() {
     .select("*")
     .eq("id", 1)
     .single();
+
+  const { data: activePromotions } = await supabase
+    .from("active_promotions")
+    .select(
+      `
+      promotion_id,
+      full_price,
+      promo_price,
+      sort_order,
+      promotions (
+        id,
+        name,
+        image
+      )
+    `
+    )
+    .order("sort_order", { ascending: true })
+    .limit(2);
 
   const fastFoodOpen = settings?.fast_food_open ?? true;
   const menuDate = formatMenuDate(settings?.menu_date);
@@ -78,6 +108,8 @@ export default async function HomePage() {
       product.id !== "dolce"
   );
 
+  const promotions = (activePromotions || []) as ActivePromotion[];
+
   return (
     <main className="min-h-screen bg-black flex justify-center">
       <section
@@ -112,6 +144,42 @@ export default async function HomePage() {
                   {menuDate}
                 </p>
               </div>
+
+              {promotions.length > 0 && (
+                <div className="mb-10 rounded-[2rem] border-4 border-yellow-300/80 bg-black/35 px-4 py-6">
+                  <p className="mb-5 text-center text-4xl font-black uppercase text-yellow-300 drop-shadow-xl">
+                    La Promozione di oggi
+                  </p>
+
+                  <div className="grid grid-cols-1 gap-8">
+                    {promotions.map((promo) => (
+                      <article
+                        key={promo.promotion_id}
+                        className="text-center"
+                      >
+                        <div className="relative mx-auto mb-2 h-72 w-full">
+                          <Image
+                            src={promo.promotions.image}
+                            alt={promo.promotions.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-center gap-5">
+                          <p className="text-3xl font-black line-through opacity-80 drop-shadow-lg">
+                            {promo.full_price}
+                          </p>
+
+                          <p className="text-6xl font-black text-yellow-300 drop-shadow-xl">
+                            {promo.promo_price}
+                          </p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
