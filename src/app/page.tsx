@@ -12,6 +12,19 @@ type Product = {
   sort_order: number;
 };
 
+function formatMenuDate(menuDate?: string | null) {
+  const date = menuDate
+    ? new Date(`${menuDate}T12:00:00`)
+    : new Date();
+
+  return new Intl.DateTimeFormat("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Rome",
+  }).format(date);
+}
+
 export default async function HomePage() {
   const { data: products } = await supabase
     .from("products")
@@ -29,6 +42,7 @@ export default async function HomePage() {
     .single();
 
   const fastFoodOpen = settings?.fast_food_open ?? true;
+  const menuDate = formatMenuDate(settings?.menu_date);
 
   const activeIds =
     activeMenu?.map((item) => item.product_id) || [];
@@ -64,13 +78,6 @@ export default async function HomePage() {
       product.id !== "dolce"
   );
 
-  const today = new Intl.DateTimeFormat("it-IT", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    timeZone: "Europe/Rome",
-  }).format(new Date());
-
   return (
     <main className="min-h-screen bg-black flex justify-center">
       <section
@@ -102,11 +109,9 @@ export default async function HomePage() {
                 </p>
 
                 <p className="text-2xl font-black uppercase mt-2">
-                  {today}
+                  {menuDate}
                 </p>
               </div>
-
-              {/* PANINI */}
 
               <div>
                 <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
@@ -139,8 +144,6 @@ export default async function HomePage() {
                   ))}
                 </div>
               </div>
-
-              {/* FRITTI */}
 
               {frittiProducts.length > 0 && (
                 <div className="mt-10">
@@ -176,8 +179,6 @@ export default async function HomePage() {
                 </div>
               )}
 
-              {/* DESSERT */}
-
               {dessertProducts.length > 0 && (
                 <div className="mt-10">
                   <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
@@ -211,8 +212,6 @@ export default async function HomePage() {
                   </div>
                 </div>
               )}
-
-              {/* COMBO */}
 
               {comboProducts.length > 0 && (
                 <div className="mt-10 border-t-4 border-white/70 pt-8">

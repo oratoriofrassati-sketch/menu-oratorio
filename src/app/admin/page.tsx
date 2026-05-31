@@ -16,6 +16,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeMenuIds, setActiveMenuIds] = useState<string[]>([]);
   const [fastFoodOpen, setFastFoodOpen] = useState(true);
+  const [menuDate, setMenuDate] = useState("");
 
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -65,6 +66,7 @@ export default function AdminPage() {
       );
 
       setFastFoodOpen(settingsData?.fast_food_open ?? true);
+      setMenuDate(settingsData?.menu_date ?? "");
     }
 
     if (isLoggedIn) {
@@ -185,10 +187,11 @@ export default function AdminPage() {
       .upsert({
         id: 1,
         fast_food_open: fastFoodOpen,
+        menu_date: menuDate || null,
       });
 
     if (settingsError) {
-      setMessage("Errore apertura/chiusura.");
+      setMessage("Errore salvataggio impostazioni.");
       setIsSaving(false);
       return;
     }
@@ -260,8 +263,8 @@ export default function AdminPage() {
             </h1>
 
             <p className="text-blue-100">
-              Seleziona i prodotti disponibili, modifica prezzi e quantità,
-              ordina le voci e poi premi Pubblica.
+              Seleziona i prodotti, modifica prezzi e quantità, ordina le voci
+              e poi premi Pubblica.
             </p>
           </div>
 
@@ -273,7 +276,20 @@ export default function AdminPage() {
           </button>
         </div>
 
-        <div className="mb-8 bg-blue-800 rounded-3xl p-6">
+        <div className="mb-8 bg-blue-800 rounded-3xl p-6 space-y-6">
+          <div>
+            <label className="block mb-2 text-xl font-black">
+              Data del menu
+            </label>
+
+            <input
+              type="date"
+              value={menuDate}
+              onChange={(event) => setMenuDate(event.target.value)}
+              className="w-full rounded-xl p-4 text-black text-xl font-bold"
+            />
+          </div>
+
           <button
             onClick={() => {
               setFastFoodOpen(!fastFoodOpen);
@@ -374,6 +390,14 @@ export default function AdminPage() {
           className="block mt-10 text-center text-2xl font-black underline"
         >
           Apri volantino menu
+        </a>
+
+        <a
+          href="/tv"
+          target="_blank"
+          className="block mt-4 text-center text-2xl font-black underline"
+        >
+          Apri versione TV
         </a>
       </div>
     </main>
