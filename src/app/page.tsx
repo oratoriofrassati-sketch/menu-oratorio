@@ -10,6 +10,7 @@ type Product = {
   price: string;
   image: string;
   sort_order: number;
+  subtitle: string | null;
 };
 
 type ActivePromotionRow = {
@@ -100,11 +101,6 @@ export default async function HomePage() {
       activeIds.includes(product.id)
     ) || [];
 
-  const comboProducts = activeProducts.filter(
-    (product: Product) =>
-      product.id.startsWith("combo-")
-  );
-
   const frittiProducts = activeProducts.filter(
     (product: Product) =>
       product.id === "patatine" ||
@@ -119,11 +115,12 @@ export default async function HomePage() {
 
   const standardProducts = activeProducts.filter(
     (product: Product) =>
-      !product.id.startsWith("combo-") &&
       product.id !== "patatine" &&
       product.id !== "nuggets-pollo" &&
       product.id !== "frutta" &&
-      product.id !== "dolce"
+      product.id !== "dolce" &&
+      product.id !== "combo-bibita" &&
+      product.id !== "combo-birra"
   );
 
   const promotions: PromotionView[] = (
@@ -165,12 +162,12 @@ export default async function HomePage() {
 
           {fastFoodOpen ? (
             <>
-              <div className="mb-4 text-center drop-shadow-xl">
-                <p className="text-3xl font-black uppercase">
+              <div className="mb-8 text-center drop-shadow-xl">
+                <p className="text-5xl font-black uppercase">
                   Menu di
                 </p>
 
-                <p className="text-2xl font-black uppercase mt-2">
+                <p className="text-4xl font-black uppercase mt-2">
                   {menuDate}
                 </p>
               </div>
@@ -211,37 +208,39 @@ export default async function HomePage() {
                 </div>
               )}
 
-              <div>
-                <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
-                  Panini
-                </p>
+              {standardProducts.length > 0 && (
+                <div>
+                  <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
+                    Panini
+                  </p>
 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                  {standardProducts.map((product: Product) => (
-                    <article
-                      key={product.id}
-                      className="text-center"
-                    >
-                      <div className="relative mx-auto mb-0 h-52 w-full">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-contain drop-shadow-2xl"
-                        />
-                      </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                    {standardProducts.map((product: Product) => (
+                      <article
+                        key={product.id}
+                        className="text-center"
+                      >
+                        <div className="relative mx-auto mb-0 h-52 w-full">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
 
-                      <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                        {product.name}
-                      </h2>
+                        <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
+                          {product.name}
+                        </h2>
 
-                      <p className="mt-1 text-2xl font-black drop-shadow-lg">
-                        {product.price}
-                      </p>
-                    </article>
-                  ))}
+                        <p className="mt-1 text-2xl font-black drop-shadow-lg">
+                          {product.price}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {frittiProducts.length > 0 && (
                 <div className="mt-10">
@@ -302,37 +301,13 @@ export default async function HomePage() {
                           {product.name}
                         </h2>
 
+                        {product.subtitle && (
+                          <p className="mt-1 text-2xl font-black uppercase text-yellow-300 drop-shadow-lg">
+                            {product.subtitle}
+                          </p>
+                        )}
+
                         <p className="mt-1 text-2xl font-black drop-shadow-lg">
-                          {product.price}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {comboProducts.length > 0 && (
-                <div className="mt-10 border-t-4 border-white/70 pt-8">
-                  <p className="mb-6 text-center text-4xl font-black uppercase drop-shadow-xl">
-                    Menu Combo
-                  </p>
-
-                  <div className="flex flex-col gap-10">
-                    {comboProducts.map((product: Product) => (
-                      <article
-                        key={product.id}
-                        className="text-center"
-                      >
-                        <div className="relative mx-auto mb-2 h-[26rem] w-full">
-                          <Image
-                            src={product.image}
-                            alt={product.name}
-                            fill
-                            className="object-contain drop-shadow-2xl"
-                          />
-                        </div>
-
-                        <p className="mt-0 text-5xl font-black drop-shadow-lg">
                           {product.price}
                         </p>
                       </article>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type Promotion = {
@@ -137,12 +138,20 @@ export default function PromozioniPage() {
   return (
     <main className="min-h-screen bg-blue-900 text-white p-8">
       <div className="max-w-6xl mx-auto">
+        <Link
+          href="/admin"
+          className="inline-block mb-8 rounded-2xl bg-blue-700 px-6 py-3 text-xl font-black"
+        >
+          ← Torna al menu
+        </Link>
+
         <h1 className="text-5xl font-black mb-3">
           Gestione Promozioni
         </h1>
 
         <p className="text-xl text-blue-100 mb-10">
-          Seleziona massimo 2 promozioni del giorno.
+          Seleziona massimo 2 promozioni del giorno e imposta prezzo pieno e
+          prezzo scontato.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

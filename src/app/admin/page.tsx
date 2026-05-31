@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -10,6 +11,7 @@ type Product = {
   image: string;
   sort_order: number;
   quantity: string | null;
+  subtitle: string | null;
 };
 
 export default function AdminPage() {
@@ -39,7 +41,13 @@ export default function AdminPage() {
         .select("*")
         .order("sort_order", { ascending: true });
 
-      const sortedProducts = (productsData || []).sort((a, b) => {
+      const visibleProducts = (productsData || []).filter(
+        (product) =>
+          product.id !== "combo-bibita" &&
+          product.id !== "combo-birra"
+      );
+
+      const sortedProducts = visibleProducts.sort((a, b) => {
         const aIsLast = a.id === "frutta" || a.id === "dolce";
         const bIsLast = b.id === "frutta" || b.id === "dolce";
 
@@ -106,6 +114,16 @@ export default function AdminPage() {
     );
   }
 
+  function updateSubtitle(productId: string, newSubtitle: string) {
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id === productId
+          ? { ...product, subtitle: newSubtitle }
+          : product
+      )
+    );
+  }
+
   function moveProductUp(index: number) {
     if (index === 0) return;
 
@@ -144,12 +162,13 @@ export default function AdminPage() {
         .update({
           price: product.price,
           quantity: product.quantity || "",
+          subtitle: product.subtitle || "",
           sort_order: index * 10,
         })
         .eq("id", product.id);
 
       if (error) {
-        setMessage(`Errore prezzo/quantità/ordine ${product.name}`);
+        setMessage(`Errore salvataggio ${product.name}`);
         setIsSaving(false);
         return;
       }
@@ -166,8 +185,12 @@ export default function AdminPage() {
       return;
     }
 
-    if (activeMenuIds.length > 0) {
-      const rows = activeMenuIds.map((id) => ({
+    const filteredActiveMenuIds = activeMenuIds.filter(
+      (id) => id !== "combo-bibita" && id !== "combo-birra"
+    );
+
+    if (filteredActiveMenuIds.length > 0) {
+      const rows = filteredActiveMenuIds.map((id) => ({
         product_id: id,
       }));
 
@@ -225,12 +248,16 @@ export default function AdminPage() {
     return (
       <main className="min-h-screen bg-blue-900 text-white p-8 flex items-center justify-center">
         <div className="bg-blue-800 rounded-3xl p-8 w-full max-w-md">
-          <h1 className="text-4xl font-black mb-6">Accesso cucina</h1>
+          <h1 className="text-4xl font-black mb-6">
+            Accesso cucina
+          </h1>
 
           <input
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 login();
@@ -247,7 +274,9 @@ export default function AdminPage() {
             Entra
           </button>
 
-          {message && <p className="mt-4 font-bold">{message}</p>}
+          {message && (
+            <p className="mt-4 font-bold">{message}</p>
+          )}
         </div>
       </main>
     );
@@ -263,8 +292,8 @@ export default function AdminPage() {
             </h1>
 
             <p className="text-blue-100">
-              Seleziona i prodotti, modifica prezzi e quantità, ordina le voci
-              e poi premi Pubblica.
+              Seleziona i prodotti, modifica prezzi e quantità,
+              ordina le voci e poi premi Pubblica.
             </p>
           </div>
 
@@ -276,6 +305,13 @@ export default function AdminPage() {
           </button>
         </div>
 
+        <Link
+          href="/admin/promozioni"
+          className="block mb-8 rounded-3xl bg-yellow-400 text-blue-950 text-center text-2xl font-black py-5"
+        >
+          Gestisci promozioni
+        </Link>
+
         <div className="mb-8 bg-blue-800 rounded-3xl p-6 space-y-6">
           <div>
             <label className="block mb-2 text-xl font-black">
@@ -285,7 +321,9 @@ export default function AdminPage() {
             <input
               type="date"
               value={menuDate}
-              onChange={(event) => setMenuDate(event.target.value)}
+              onChange={(event) =>
+                setMenuDate(event.target.value)
+              }
               className="w-full rounded-xl p-4 text-black text-xl font-bold"
             />
           </div>
@@ -299,13 +337,20 @@ export default function AdminPage() {
               fastFoodOpen ? "bg-green-600" : "bg-red-600"
             }`}
           >
-            {fastFoodOpen ? "FAST FOOD APERTO" : "FAST FOOD CHIUSO"}
+            {fastFoodOpen
+              ? "FAST FOOD APERTO"
+              : "FAST FOOD CHIUSO"}
           </button>
         </div>
 
         <div className="bg-blue-800 rounded-3xl p-6 space-y-6 mb-8">
           {products.map((product, index) => {
-            const isActive = activeMenuIds.includes(product.id);
+            const isActive =
+              activeMenuIds.includes(product.id);
+
+            const canHaveSubtitle =
+              product.id === "frutta" ||
+              product.id === "dolce";
 
             return (
               <div
@@ -336,12 +381,17 @@ export default function AdminPage() {
                     isActive ? "bg-green-600" : "bg-blue-600"
                   }`}
                 >
-                  <div className="font-bold text-xl">{product.name}</div>
+                  <div className="font-bold text-xl">
+                    {product.name}
+                  </div>
                 </button>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block mb-1 font-bold">Prezzo</label>
+                    <label className="block mb-1 font-bold">
+                      Prezzo
+                    </label>
+
                     <input
                       type="text"
                       value={product.price}
@@ -356,6 +406,7 @@ export default function AdminPage() {
                     <label className="block mb-1 font-bold">
                       Quantità disponibile
                     </label>
+
                     <input
                       type="text"
                       value={product.quantity || ""}
@@ -367,6 +418,24 @@ export default function AdminPage() {
                     />
                   </div>
                 </div>
+
+                {canHaveSubtitle && (
+                  <div className="mt-3">
+                    <label className="block mb-1 font-bold">
+                      Specifica frutta/dolce
+                    </label>
+
+                    <input
+                      type="text"
+                      value={product.subtitle || ""}
+                      onChange={(event) =>
+                        updateSubtitle(product.id, event.target.value)
+                      }
+                      placeholder="Es. anguria, crostata, gelato..."
+                      className="w-full rounded-xl p-3 text-black text-xl font-bold"
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -381,7 +450,9 @@ export default function AdminPage() {
         </button>
 
         {message && (
-          <p className="mt-6 text-xl font-bold text-center">{message}</p>
+          <p className="mt-6 text-xl font-bold text-center">
+            {message}
+          </p>
         )}
 
         <a
