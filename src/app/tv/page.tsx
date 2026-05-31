@@ -102,7 +102,7 @@ export default async function TvPage() {
 
                 <div className="text-right drop-shadow-xl">
                   <p className="text-5xl font-black uppercase">
-                    Menu di oggi
+                    Menu di
                   </p>
 
                   <p className="mt-1 text-4xl font-black uppercase">

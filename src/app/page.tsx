@@ -105,7 +105,7 @@ export default async function HomePage() {
             <>
               <div className="mb-4 text-center drop-shadow-xl">
                 <p className="text-3xl font-black uppercase">
-                  Menu di oggi
+                  Menu di
                 </p>
 
                 <p className="text-2xl font-black uppercase mt-2">
