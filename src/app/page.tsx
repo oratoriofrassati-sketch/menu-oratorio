@@ -56,6 +56,14 @@ function formatMenuDate(menuDate?: string | null) {
   }).format(date);
 }
 
+function getDisplayName(product: Product) {
+  if (product.id === "nuggets-pollo") {
+    return "Nuggets di pollo (9 pezzi)";
+  }
+
+  return product.name;
+}
+
 export default async function HomePage() {
   const { data: products } = await supabase
     .from("products")
@@ -173,7 +181,7 @@ export default async function HomePage() {
               </div>
 
               {promotions.length > 0 && (
-                <div className="mb-10 rounded-[2rem] border-4 border-yellow-300/80 bg-black/35 px-4 py-6">
+                <div className="mb-4 rounded-[2rem] border-4 border-yellow-300/80 bg-black/35 px-4 py-6">
                   <p className="mb-5 text-center text-4xl font-black uppercase text-yellow-300 drop-shadow-xl">
                     La Promozione di oggi
                   </p>
@@ -208,6 +216,10 @@ export default async function HomePage() {
                 </div>
               )}
 
+              <p className="mb-8 text-center text-xl font-black italic drop-shadow-lg">
+                Menu soggetto a disponibilità
+              </p>
+
               {standardProducts.length > 0 && (
                 <div>
                   <p className="mb-4 text-center text-3xl font-black uppercase drop-shadow-xl">
@@ -223,14 +235,14 @@ export default async function HomePage() {
                         <div className="relative mx-auto mb-0 h-52 w-full">
                           <Image
                             src={product.image}
-                            alt={product.name}
+                            alt={getDisplayName(product)}
                             fill
                             className="object-contain drop-shadow-2xl"
                           />
                         </div>
 
                         <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                          {product.name}
+                          {getDisplayName(product)}
                         </h2>
 
                         <p className="mt-1 text-2xl font-black drop-shadow-lg">
@@ -257,14 +269,14 @@ export default async function HomePage() {
                         <div className="relative mx-auto mb-0 h-52 w-full">
                           <Image
                             src={product.image}
-                            alt={product.name}
+                            alt={getDisplayName(product)}
                             fill
                             className="object-contain drop-shadow-2xl"
                           />
                         </div>
 
                         <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                          {product.name}
+                          {getDisplayName(product)}
                         </h2>
 
                         <p className="mt-1 text-2xl font-black drop-shadow-lg">
@@ -291,14 +303,14 @@ export default async function HomePage() {
                         <div className="relative mx-auto mb-0 h-52 w-full">
                           <Image
                             src={product.image}
-                            alt={product.name}
+                            alt={getDisplayName(product)}
                             fill
                             className="object-contain drop-shadow-2xl"
                           />
                         </div>
 
                         <h2 className="text-[1.35rem] font-black uppercase leading-tight tracking-wide drop-shadow-lg">
-                          {product.name}
+                          {getDisplayName(product)}
                         </h2>
 
                         {product.subtitle && (
@@ -315,6 +327,28 @@ export default async function HomePage() {
                   </div>
                 </div>
               )}
+
+              <div className="mt-12 border-t-4 border-white/80 pt-8 text-center">
+                <p className="mb-5 text-5xl font-black uppercase text-yellow-300 drop-shadow-xl">
+                  Crea il tuo menu
+                </p>
+
+                <p className="text-2xl font-black uppercase leading-tight drop-shadow-lg">
+                  Menu panino / piadina / nuggets / rotolo
+                  <br />
+                  + patate fritte + birra
+                </p>
+
+                <p className="mt-5 text-2xl font-black uppercase leading-tight drop-shadow-lg">
+                  Menu panino / piadina / nuggets / rotolo
+                  <br />
+                  + patate fritte + bibita
+                </p>
+
+                <p className="mt-6 text-lg font-black italic drop-shadow-lg">
+                  Birra in vendita solo in abbinamento con i menu
+                </p>
+              </div>
             </>
           ) : (
             <div className="mt-16 rounded-[2rem] bg-white/95 px-8 py-12 text-center text-[#12377a] shadow-2xl">
