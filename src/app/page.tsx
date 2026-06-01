@@ -328,27 +328,17 @@ export default async function HomePage() {
                 </div>
               )}
 
-              <div className="mt-12 border-t-4 border-white/80 pt-8 text-center">
-                <p className="mb-5 text-5xl font-black uppercase text-yellow-300 drop-shadow-xl">
-                  Crea il tuo menu
-                </p>
+<div className="mt-12 border-t-4 border-white/80 pt-8">
+  <div className="relative mx-auto h-[520px] w-full">
+    <Image
+      src="/menu-combo-footer.jpg"
+      alt="Menu combo"
+      fill
+      className="object-contain drop-shadow-2xl"
+    />
+  </div>
+</div>
 
-                <p className="text-2xl font-black uppercase leading-tight drop-shadow-lg">
-                  Menu panino / piadina / nuggets / rotolo
-                  <br />
-                  + patate fritte + birra
-                </p>
-
-                <p className="mt-5 text-2xl font-black uppercase leading-tight drop-shadow-lg">
-                  Menu panino / piadina / nuggets / rotolo
-                  <br />
-                  + patate fritte + bibita
-                </p>
-
-                <p className="mt-6 text-lg font-black italic drop-shadow-lg">
-                  Birra in vendita solo in abbinamento con i menu
-                </p>
-              </div>
             </>
           ) : (
             <div className="mt-16 rounded-[2rem] bg-white/95 px-8 py-12 text-center text-[#12377a] shadow-2xl">
