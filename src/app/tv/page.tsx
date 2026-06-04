@@ -123,15 +123,19 @@ export default async function TvPage() {
     }))
     .filter((item) => item.promotion);
 
-  const sideProducts = activeProducts.filter(
+  const frittiProducts = activeProducts.filter(
     (product: Product) =>
       product.id === "patatine" ||
-      product.id === "nuggets-pollo" ||
+      product.id === "nuggets-pollo"
+  );
+
+  const dessertProducts = activeProducts.filter(
+    (product: Product) =>
       product.id === "frutta" ||
       product.id === "dolce"
   );
 
-  const mainProducts = activeProducts.filter(
+  const paniniProducts = activeProducts.filter(
     (product: Product) =>
       product.id !== "patatine" &&
       product.id !== "nuggets-pollo" &&
@@ -143,176 +147,239 @@ export default async function TvPage() {
 
   return (
     <main className="min-h-screen bg-black flex items-center justify-center overflow-hidden">
-      <section
-        className="relative aspect-video w-full max-w-[1920px] overflow-hidden text-white"
-        style={{
-          backgroundImage: "url('/menu-bg.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/25" />
+      <section className="relative aspect-video w-full max-w-[1920px] overflow-hidden bg-black text-white">
+        {fastFoodOpen ? (
+          <div className="grid h-full grid-cols-[360px_1fr_620px] grid-rows-[1fr_260px] gap-3 p-3 font-[family-name:var(--font-caveat)]">
+            {/* COLONNA SINISTRA: DATA + PROMOZIONI */}
 
-        <div className="relative z-10 flex h-full flex-col px-10 py-6 font-[family-name:var(--font-caveat)]">
-          {fastFoodOpen ? (
-            <>
-              <header className="mb-4 flex items-center justify-between">
-                <div className="relative h-32 w-64">
-                  <Image
-                    src="/fast-food-logo.png"
-                    alt="Frassati Fast Food"
-                    fill
-                    priority
-                    className="object-contain drop-shadow-2xl"
-                  />
-                </div>
+            <aside
+              className="col-start-1 col-end-2 row-start-1 row-end-3 flex flex-col overflow-hidden border-r-4 border-black"
+              style={{
+                backgroundImage: "url('/menu-bg.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <div className="px-4 pt-5 text-center drop-shadow-xl">
+                <p className="text-5xl font-black uppercase leading-none">
+                  Menu di
+                </p>
 
-                <div className="text-right drop-shadow-xl">
-                  <p className="text-5xl font-black uppercase leading-none">
-                    Menu di
-                  </p>
+                <p className="mt-3 text-4xl font-black uppercase leading-none">
+                  {menuDate}
+                </p>
+              </div>
 
-                  <p className="mt-2 text-4xl font-black uppercase leading-none">
-                    {menuDate}
-                  </p>
-                </div>
-              </header>
+              <div className="my-5 border-t-4 border-yellow-300" />
 
-              {promotions.length > 0 && (
-                <section className="mb-4 rounded-[2rem] border-4 border-yellow-300/80 bg-black/40 px-7 py-4">
-                  <p className="mb-3 text-center text-5xl font-black uppercase leading-none text-yellow-300 drop-shadow-xl">
-                    La Promozione di oggi
-                  </p>
+              <p className="px-3 text-center text-4xl font-black uppercase leading-none text-yellow-300 drop-shadow-xl">
+                La Promozione di oggi
+              </p>
 
-                  <div className="grid grid-cols-2 gap-8">
-                    {promotions.map((promo) => (
-                      <article
-                        key={promo.promotion_id}
-                        className="flex items-center justify-center gap-6 rounded-3xl bg-black/30 px-4 py-3"
-                      >
-                        <div className="relative h-40 w-56 shrink-0">
-                          <Image
-                            src={promo.promotion.image}
-                            alt={promo.promotion.name}
-                            fill
-                            className="object-contain drop-shadow-2xl"
-                          />
-                        </div>
-
-                        <div className="text-center">
-                          <p className="text-3xl font-black line-through opacity-75">
-                            {promo.full_price}
-                          </p>
-
-                          <p className="text-7xl font-black leading-none text-yellow-300 drop-shadow-xl">
-                            {promo.promo_price}
-                          </p>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              <div className="grid flex-1 grid-cols-[1fr_360px] gap-8 overflow-hidden">
-                <section className="grid grid-cols-4 content-center gap-x-7 gap-y-6">
-                  {mainProducts.map((product: Product) => (
-                    <article
-                      key={product.id}
-                      className="text-center"
-                    >
-                      <div className="relative mx-auto h-36 w-full">
-                        <Image
-                          src={product.image}
-                          alt={getDisplayName(product)}
-                          fill
-                          className="object-contain drop-shadow-2xl"
-                        />
-                      </div>
-
-                      <h2 className="mt-1 text-[1.8rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
-                        {getDisplayName(product)}
-                      </h2>
-
-                      <p className="mt-1 text-5xl font-black leading-none drop-shadow-lg">
-                        {product.price}
-                      </p>
-                    </article>
-                  ))}
-                </section>
-
-                {sideProducts.length > 0 && (
-                  <aside className="rounded-[2rem] border-4 border-white/50 bg-black/30 px-5 py-5">
-                    <p className="mb-4 text-center text-4xl font-black uppercase text-yellow-300 drop-shadow-xl">
-                      Fritti / Dessert
-                    </p>
-
-                    <div className="flex flex-col gap-4">
-                      {sideProducts.map((product: Product) => (
-                        <article
-                          key={product.id}
-                          className="flex items-center gap-4"
-                        >
-                          <div className="relative h-24 w-24 shrink-0">
-                            <Image
-                              src={product.image}
-                              alt={getDisplayName(product)}
-                              fill
-                              className="object-contain drop-shadow-xl"
-                            />
-                          </div>
-
-                          <div>
-                            <p className="text-2xl font-black uppercase leading-none">
-                              {getDisplayName(product)}
-                            </p>
-
-                            {product.subtitle && (
-                              <p className="text-xl font-black uppercase leading-none text-yellow-300">
-                                {product.subtitle}
-                              </p>
-                            )}
-
-                            <p className="mt-1 text-4xl font-black leading-none">
-                              {product.price}
-                            </p>
-                          </div>
-                        </article>
-                      ))}
+              <div className="mt-5 flex flex-1 flex-col gap-6 px-5">
+                {promotions.map((promo) => (
+                  <article
+                    key={promo.promotion_id}
+                    className="text-center"
+                  >
+                    <div className="relative mx-auto h-56 w-full">
+                      <Image
+                        src={promo.promotion.image}
+                        alt={promo.promotion.name}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
                     </div>
-                  </aside>
-                )}
+
+                    <div className="mt-2 flex items-end justify-center gap-4">
+                      <p className="text-3xl font-black leading-none line-through opacity-75">
+                        {promo.full_price}
+                      </p>
+
+                      <p className="text-6xl font-black leading-none text-yellow-300 drop-shadow-xl">
+                        {promo.promo_price}
+                      </p>
+                    </div>
+                  </article>
+                ))}
               </div>
 
-              <footer className="mt-4 border-t-4 border-white/50 pt-3">
-                <div className="relative mx-auto h-28 w-full">
-                  <Image
-                    src="/menu-combo-footer.jpg"
-                    alt="Menu combo"
-                    fill
-                    className="object-contain drop-shadow-2xl"
-                  />
-                </div>
-              </footer>
-            </>
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <div className="rounded-[2rem] bg-white/95 px-16 py-14 text-center text-[#12377a] shadow-2xl">
-                <p className="text-7xl font-black uppercase leading-tight">
-                  Questa sera
-                  <br />
-                  il Fast Food
-                  <br />
-                  è chiuso
-                </p>
-
-                <p className="mt-8 text-4xl font-bold">
-                  Vi aspettiamo alla prossima serata!
+              <div className="mt-auto border-t-4 border-yellow-300 px-4 py-4 text-center">
+                <p className="text-xl font-black italic">
+                  Menu soggetto a disponibilità
                 </p>
               </div>
+            </aside>
+
+            {/* CENTRO: PANINI */}
+
+            <section
+              className="col-start-2 col-end-3 row-start-1 row-end-2 overflow-hidden px-4 py-4"
+              style={{
+                backgroundImage: "url('/menu-bg.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <h2 className="mb-2 text-center text-4xl font-black uppercase leading-none drop-shadow-xl">
+                Panini
+              </h2>
+
+              <div className="grid h-[calc(100%-3rem)] grid-cols-2 grid-rows-2 gap-x-8 gap-y-4">
+                {paniniProducts.slice(0, 4).map((product: Product) => (
+                  <article
+                    key={product.id}
+                    className="text-center"
+                  >
+                    <div className="relative mx-auto h-44 w-full">
+                      <Image
+                        src={product.image}
+                        alt={getDisplayName(product)}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
+                    </div>
+
+                    <h3 className="mt-1 text-[1.75rem] font-black uppercase leading-none drop-shadow-lg">
+                      {getDisplayName(product)}
+                    </h3>
+
+                    <p className="mt-1 text-3xl font-black leading-none drop-shadow-lg">
+                      {product.price}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            {/* DESTRA ALTA: FRITTI */}
+
+            <section
+              className="col-start-3 col-end-4 row-start-1 row-end-2 overflow-hidden px-5 py-4"
+              style={{
+                backgroundImage: "url('/menu-bg.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <h2 className="mb-4 text-center text-4xl font-black uppercase leading-none drop-shadow-xl">
+                Fritti
+              </h2>
+
+              <div className="grid h-[calc(100%-3rem)] grid-cols-2 gap-8">
+                {frittiProducts.map((product: Product) => (
+                  <article
+                    key={product.id}
+                    className="flex flex-col items-center justify-center text-center"
+                  >
+                    <div className="relative h-52 w-full">
+                      <Image
+                        src={product.image}
+                        alt={getDisplayName(product)}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
+                    </div>
+
+                    <h3 className="mt-2 text-[1.75rem] font-black uppercase leading-none drop-shadow-lg">
+                      {getDisplayName(product)}
+                    </h3>
+
+                    <p className="mt-2 text-3xl font-black leading-none drop-shadow-lg">
+                      {product.price}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            {/* DESTRA BASSA SINISTRA: DESSERT */}
+
+            <section
+              className="col-start-2 col-end-3 row-start-2 row-end-3 overflow-hidden px-5 py-4"
+              style={{
+                backgroundImage: "url('/menu-bg.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <div className="grid h-full grid-cols-2 gap-4">
+                {dessertProducts.map((product: Product) => (
+                  <article
+                    key={product.id}
+                    className="flex flex-col items-center justify-center text-center"
+                  >
+                    <div className="relative h-36 w-full">
+                      <Image
+                        src={product.image}
+                        alt={getDisplayName(product)}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
+                    </div>
+
+                    <h3 className="text-[1.45rem] font-black uppercase leading-none drop-shadow-lg">
+                      {getDisplayName(product)}
+                    </h3>
+
+                    {product.subtitle && (
+                      <p className="text-[1.2rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
+                        {product.subtitle}
+                      </p>
+                    )}
+
+                    <p className="mt-1 text-2xl font-black leading-none drop-shadow-lg">
+                      {product.price}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            {/* DESTRA BASSA: FOOTER COMBO */}
+
+            <section
+              className="col-start-3 col-end-4 row-start-2 row-end-3 overflow-hidden px-5 py-4"
+              style={{
+                backgroundImage: "url('/menu-bg.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <div className="relative h-full w-full">
+                <Image
+                  src="/menu-combo-footer.jpg"
+                  alt="Menu combo"
+                  fill
+                  className="object-contain drop-shadow-2xl"
+                />
+              </div>
+            </section>
+          </div>
+        ) : (
+          <div
+            className="flex h-full items-center justify-center font-[family-name:var(--font-caveat)]"
+            style={{
+              backgroundImage: "url('/menu-bg.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="rounded-[2rem] bg-white/95 px-16 py-14 text-center text-[#12377a] shadow-2xl">
+              <p className="text-7xl font-black uppercase leading-tight">
+                Questa sera
+                <br />
+                il Fast Food
+                <br />
+                è chiuso
+              </p>
+
+              <p className="mt-8 text-4xl font-bold">
+                Vi aspettiamo alla prossima serata!
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
     </main>
   );
