@@ -149,7 +149,7 @@ export default async function TvPage() {
     <main className="min-h-screen bg-black flex items-center justify-center overflow-hidden">
       <section className="relative aspect-video w-full max-w-[1920px] overflow-hidden bg-black text-white">
         {fastFoodOpen ? (
-          <div className="grid h-full grid-cols-[360px_1fr_620px] grid-rows-[1fr_260px] gap-3 p-3 font-[family-name:var(--font-caveat)]">
+          <div className="grid h-full grid-cols-[360px_1fr_440px] grid-rows-[1fr_360px] gap-3 p-3 font-[family-name:var(--font-caveat)]">
             {/* COLONNA SINISTRA: DATA + PROMOZIONI */}
 
             <aside
@@ -266,7 +266,7 @@ export default async function TvPage() {
                 Fritti
               </h2>
 
-              <div className="grid h-[calc(100%-3rem)] grid-cols-2 gap-8">
+              <div className="grid h-[calc(100%-3rem)] grid-cols-1 gap-4">
                 {frittiProducts.map((product: Product) => (
                   <article
                     key={product.id}
@@ -339,7 +339,7 @@ export default async function TvPage() {
             {/* DESTRA BASSA: FOOTER COMBO */}
 
             <section
-              className="col-start-3 col-end-4 row-start-2 row-end-3 overflow-hidden px-5 py-4"
+              className="col-start-2 col-end-4 row-start-2 row-end-3 overflow-hidden px-5 py-4"
               style={{
                 backgroundImage: "url('/menu-bg.jpg')",
                 backgroundSize: "cover",
