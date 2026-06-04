@@ -123,7 +123,7 @@ export default async function TvPage() {
     }))
     .filter((item) => item.promotion);
 
-  const frittiDessertProducts = activeProducts.filter(
+  const sideProducts = activeProducts.filter(
     (product: Product) =>
       product.id === "patatine" ||
       product.id === "nuggets-pollo" ||
@@ -153,11 +153,11 @@ export default async function TvPage() {
       >
         <div className="absolute inset-0 bg-black/25" />
 
-        <div className="relative z-10 h-full px-8 py-6 font-[family-name:var(--font-caveat)]">
+        <div className="relative z-10 flex h-full flex-col px-10 py-6 font-[family-name:var(--font-caveat)]">
           {fastFoodOpen ? (
-            <div className="grid h-full grid-cols-[380px_1fr] gap-8">
-              <aside className="flex h-full flex-col">
-                <div className="relative mx-auto h-44 w-72">
+            <>
+              <header className="mb-4 flex items-center justify-between">
+                <div className="relative h-32 w-64">
                   <Image
                     src="/fast-food-logo.png"
                     alt="Frassati Fast Food"
@@ -167,57 +167,55 @@ export default async function TvPage() {
                   />
                 </div>
 
-                <div className="mt-2 text-center drop-shadow-xl">
-                  <p className="text-4xl font-black uppercase">
+                <div className="text-right drop-shadow-xl">
+                  <p className="text-5xl font-black uppercase leading-none">
                     Menu di
                   </p>
 
-                  <p className="mt-1 text-3xl font-black uppercase">
+                  <p className="mt-2 text-4xl font-black uppercase leading-none">
                     {menuDate}
                   </p>
                 </div>
+              </header>
 
-                {promotions.length > 0 && (
-                  <div className="mt-5 flex-1 rounded-[2rem] border-4 border-yellow-300/80 bg-black/40 px-4 py-5">
-                    <p className="mb-4 text-center text-4xl font-black uppercase leading-none text-yellow-300 drop-shadow-xl">
-                      La Promozione
-                      <br />
-                      di oggi
-                    </p>
+              {promotions.length > 0 && (
+                <section className="mb-4 rounded-[2rem] border-4 border-yellow-300/80 bg-black/40 px-7 py-4">
+                  <p className="mb-3 text-center text-5xl font-black uppercase leading-none text-yellow-300 drop-shadow-xl">
+                    La Promozione di oggi
+                  </p>
 
-                    <div className="flex flex-col gap-4">
-                      {promotions.map((promo) => (
-                        <article
-                          key={promo.promotion_id}
-                          className="rounded-3xl bg-black/30 p-3 text-center"
-                        >
-                          <div className="relative mx-auto h-36 w-full">
-                            <Image
-                              src={promo.promotion.image}
-                              alt={promo.promotion.name}
-                              fill
-                              className="object-contain drop-shadow-2xl"
-                            />
-                          </div>
+                  <div className="grid grid-cols-2 gap-8">
+                    {promotions.map((promo) => (
+                      <article
+                        key={promo.promotion_id}
+                        className="flex items-center justify-center gap-6 rounded-3xl bg-black/30 px-4 py-3"
+                      >
+                        <div className="relative h-40 w-56 shrink-0">
+                          <Image
+                            src={promo.promotion.image}
+                            alt={promo.promotion.name}
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                          />
+                        </div>
 
-                          <div className="mt-2 flex items-center justify-center gap-4">
-                            <p className="text-2xl font-black line-through opacity-75">
-                              {promo.full_price}
-                            </p>
+                        <div className="text-center">
+                          <p className="text-3xl font-black line-through opacity-75">
+                            {promo.full_price}
+                          </p>
 
-                            <p className="text-5xl font-black text-yellow-300 drop-shadow-xl">
-                              {promo.promo_price}
-                            </p>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
+                          <p className="text-7xl font-black leading-none text-yellow-300 drop-shadow-xl">
+                            {promo.promo_price}
+                          </p>
+                        </div>
+                      </article>
+                    ))}
                   </div>
-                )}
-              </aside>
+                </section>
+              )}
 
-              <div className="flex h-full flex-col">
-                <div className="grid flex-1 grid-cols-4 gap-x-6 gap-y-3">
+              <div className="grid flex-1 grid-cols-[1fr_360px] gap-8 overflow-hidden">
+                <section className="grid grid-cols-4 content-center gap-x-7 gap-y-6">
                   {mainProducts.map((product: Product) => (
                     <article
                       key={product.id}
@@ -232,26 +230,30 @@ export default async function TvPage() {
                         />
                       </div>
 
-                      <h2 className="mt-1 text-[1.75rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
+                      <h2 className="mt-1 text-[1.8rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
                         {getDisplayName(product)}
                       </h2>
 
-                      <p className="mt-1 text-4xl font-black drop-shadow-lg">
+                      <p className="mt-1 text-5xl font-black leading-none drop-shadow-lg">
                         {product.price}
                       </p>
                     </article>
                   ))}
-                </div>
+                </section>
 
-                {frittiDessertProducts.length > 0 && (
-                  <div className="mt-2 border-t-4 border-white/60 pt-3">
-                    <div className="grid grid-cols-4 gap-5">
-                      {frittiDessertProducts.map((product: Product) => (
+                {sideProducts.length > 0 && (
+                  <aside className="rounded-[2rem] border-4 border-white/50 bg-black/30 px-5 py-5">
+                    <p className="mb-4 text-center text-4xl font-black uppercase text-yellow-300 drop-shadow-xl">
+                      Fritti / Dessert
+                    </p>
+
+                    <div className="flex flex-col gap-4">
+                      {sideProducts.map((product: Product) => (
                         <article
                           key={product.id}
-                          className="flex items-center justify-center gap-3"
+                          className="flex items-center gap-4"
                         >
-                          <div className="relative h-20 w-20 shrink-0">
+                          <div className="relative h-24 w-24 shrink-0">
                             <Image
                               src={product.image}
                               alt={getDisplayName(product)}
@@ -271,28 +273,28 @@ export default async function TvPage() {
                               </p>
                             )}
 
-                            <p className="text-3xl font-black">
+                            <p className="mt-1 text-4xl font-black leading-none">
                               {product.price}
                             </p>
                           </div>
                         </article>
                       ))}
                     </div>
-                  </div>
+                  </aside>
                 )}
-
-                <div className="mt-3 border-t-4 border-white/60 pt-3">
-                  <div className="relative mx-auto h-32 w-full">
-                    <Image
-                      src="/menu-combo-footer.jpg"
-                      alt="Menu combo"
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                    />
-                  </div>
-                </div>
               </div>
-            </div>
+
+              <footer className="mt-4 border-t-4 border-white/50 pt-3">
+                <div className="relative mx-auto h-28 w-full">
+                  <Image
+                    src="/menu-combo-footer.jpg"
+                    alt="Menu combo"
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                  />
+                </div>
+              </footer>
+            </>
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="rounded-[2rem] bg-white/95 px-16 py-14 text-center text-[#12377a] shadow-2xl">
