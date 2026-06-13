@@ -195,7 +195,7 @@ export default async function TvPage() {
             </aside>
 
             <section
-              className="grid h-full grid-cols-4 grid-rows-2 gap-x-5 gap-y-3 overflow-hidden px-6 py-5"
+             className="grid h-full grid-cols-3 grid-rows-3 gap-x-6 gap-y-1 overflow-hidden px-8 py-4"
               style={{
                 backgroundImage: "url('/menu-bg.jpg')",
                 backgroundSize: "cover",
@@ -207,7 +207,7 @@ export default async function TvPage() {
                   key={product.id}
                   className="flex flex-col items-center justify-center text-center"
                 >
-                  <div className="relative h-40 w-full">
+                  <div className="relative h-48 w-full">
                     <Image
                       src={product.image}
                       alt={getDisplayName(product)}
@@ -216,7 +216,7 @@ export default async function TvPage() {
                     />
                   </div>
 
-                  <h2 className="mt-2 text-[1.65rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
+                  <h2 className="mt-1 text-[1.85rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
                     {getDisplayName(product)}
                   </h2>
 
@@ -226,7 +226,7 @@ export default async function TvPage() {
                     </p>
                   )}
 
-                  <p className="mt-2 text-4xl font-black leading-none drop-shadow-lg">
+                  <p className="mt-1 text-5xl font-black leading-none drop-shadow-lg">
                     {product.price}
                   </p>
                 </article>
