@@ -142,23 +142,13 @@ export default async function TvPage() {
                 backgroundPosition: "center",
               }}
             >
-              <div className="px-4 pt-5 text-center drop-shadow-xl">
-                <p className="text-5xl font-black uppercase leading-none">
-                  Menu di
-                </p>
-
-                <p className="mt-3 text-4xl font-black uppercase leading-none">
+              <div className="px-4 py-4 text-center drop-shadow-xl">
+                <p className="text-4xl font-black uppercase leading-none">
                   {menuDate}
                 </p>
               </div>
 
-              <div className="my-5 border-t-4 border-yellow-300" />
-
-              <p className="px-3 text-center text-4xl font-black uppercase leading-none text-yellow-300 drop-shadow-xl">
-                La Promozione di oggi
-              </p>
-
-              <div className="mt-5 flex flex-1 flex-col gap-6 px-5">
+              <div className="flex flex-1 flex-col gap-5 px-5">
                 {promotions.map((promo) => (
                   <article
                     key={promo.promotion_id}
@@ -184,9 +174,20 @@ export default async function TvPage() {
                     </div>
                   </article>
                 ))}
+
+                <article className="mt-auto text-center">
+                  <div className="relative mx-auto h-56 w-full">
+                    <Image
+                      src="/menu-combo-footer.jpg"
+                      alt="Menu combo"
+                      fill
+                      className="object-contain drop-shadow-2xl"
+                    />
+                  </div>
+                </article>
               </div>
 
-              <div className="mt-auto border-t-4 border-yellow-300 px-4 py-4 text-center">
+              <div className="mt-4 border-t-4 border-yellow-300 px-4 py-4 text-center">
                 <p className="text-xl font-black italic">
                   Menu soggetto a disponibilità
                 </p>
@@ -194,55 +195,42 @@ export default async function TvPage() {
             </aside>
 
             <section
-              className="flex h-full flex-col gap-3 overflow-hidden"
+              className="grid h-full grid-cols-4 grid-rows-2 gap-x-5 gap-y-3 overflow-hidden px-6 py-5"
               style={{
                 backgroundImage: "url('/menu-bg.jpg')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
-              <div className="grid flex-1 grid-cols-4 gap-x-5 gap-y-3 px-6 py-5">
-                {gridProducts.map((product: Product) => (
-                  <article
-                    key={product.id}
-                    className="flex flex-col items-center justify-center text-center"
-                  >
-                    <div className="relative h-40 w-full">
-                      <Image
-                        src={product.image}
-                        alt={getDisplayName(product)}
-                        fill
-                        className="object-contain drop-shadow-2xl"
-                      />
-                    </div>
+              {gridProducts.map((product: Product) => (
+                <article
+                  key={product.id}
+                  className="flex flex-col items-center justify-center text-center"
+                >
+                  <div className="relative h-40 w-full">
+                    <Image
+                      src={product.image}
+                      alt={getDisplayName(product)}
+                      fill
+                      className="object-contain drop-shadow-2xl"
+                    />
+                  </div>
 
-                    <h2 className="mt-2 text-[1.65rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
-                      {getDisplayName(product)}
-                    </h2>
+                  <h2 className="mt-2 text-[1.65rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
+                    {getDisplayName(product)}
+                  </h2>
 
-                    {product.subtitle && (
-                      <p className="mt-1 text-[1.35rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
-                        {product.subtitle}
-                      </p>
-                    )}
-
-                    <p className="mt-2 text-4xl font-black leading-none drop-shadow-lg">
-                      {product.price}
+                  {product.subtitle && (
+                    <p className="mt-1 text-[1.35rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
+                      {product.subtitle}
                     </p>
-                  </article>
-                ))}
-              </div>
+                  )}
 
-              <div className="border-t-4 border-white/50 px-6 py-4">
-                <div className="relative mx-auto h-[15rem] w-full">
-                  <Image
-                    src="/menu-combo-footer.jpg"
-                    alt="Menu combo"
-                    fill
-                    className="object-contain drop-shadow-2xl"
-                  />
-                </div>
-              </div>
+                  <p className="mt-2 text-4xl font-black leading-none drop-shadow-lg">
+                    {product.price}
+                  </p>
+                </article>
+              ))}
             </section>
           </div>
         ) : (
