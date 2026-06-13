@@ -248,7 +248,7 @@ export default async function TvPage() {
               ))}
 
 <article className="flex flex-col items-center justify-center px-0 text-center">
-  <div className="relative h-[23rem] w-full scale-125">
+  <div className="relative h-[23rem] w-full scale-110">
     <Image
       src="/menu-combo-footer.jpg"
       alt="Menu combo"
