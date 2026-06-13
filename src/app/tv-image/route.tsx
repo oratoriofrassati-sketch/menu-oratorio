@@ -1,79 +1,72 @@
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
-
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function GET(request: Request) {
-  try {
-    const origin = new URL(request.url).origin;
-    const tvUrl = `${origin}/tv`;
+  const origin = new URL(request.url).origin;
+  const tvUrl = `${origin}/tv`;
 
-    const browser = await puppeteer.launch({
-      args: [
-        ...chromium.args,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-      ],
-      executablePath: await chromium.executablePath(),
-      headless: true,
-      defaultViewport: {
-        width: 1920,
-        height: 1080,
-        deviceScaleFactor: 1,
-      },
-    });
+  const token = process.env.BROWSERLESS_TOKEN;
 
-    try {
-      const page = await browser.newPage();
-
-      await page.setViewport({
-        width: 1920,
-        height: 1080,
-        deviceScaleFactor: 1,
-      });
-
-      await page.goto(tvUrl, {
-        waitUntil: "networkidle2",
-        timeout: 60000,
-      });
-
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const screenshot = await page.screenshot({
-        type: "png",
-        fullPage: false,
-        clip: {
-          x: 0,
-          y: 0,
-          width: 1920,
-          height: 1080,
-        },
-      });
-
-      return new Response(screenshot as BodyInit, {
-        headers: {
-          "Content-Type": "image/png",
-          "Cache-Control": "no-store, max-age=0",
-        },
-      });
-    } finally {
-      await browser.close();
-    }
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? `${error.name}: ${error.message}\n\n${error.stack}`
-        : String(error);
-
-    return new Response(message, {
+  if (!token) {
+    return new Response("Missing BROWSERLESS_TOKEN", {
       status: 500,
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
       },
     });
   }
+
+  const response = await fetch(
+    `https://chrome.browserless.io/screenshot?token=${token}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: tvUrl,
+        options: {
+          type: "png",
+          fullPage: false,
+          clip: {
+            x: 0,
+            y: 0,
+            width: 1920,
+            height: 1080,
+          },
+        },
+        viewport: {
+          width: 1920,
+          height: 1080,
+          deviceScaleFactor: 1,
+        },
+        gotoOptions: {
+          waitUntil: "networkidle2",
+          timeout: 60000,
+        },
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const text = await response.text();
+
+    return new Response(text, {
+      status: 500,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    });
+  }
+
+  const image = await response.arrayBuffer();
+
+  return new Response(image, {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "no-store, max-age=0",
+    },
+  });
 }
