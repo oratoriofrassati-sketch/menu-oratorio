@@ -64,7 +64,6 @@ function getDisplayName(product: Product) {
   return product.name;
 }
 
-
 export default async function TvPage() {
   const { data: products } = await supabase
     .from("products")
@@ -124,27 +123,17 @@ export default async function TvPage() {
     }))
     .filter((item) => item.promotion);
 
-  const priorityIds = [
-    "vegetariano",
-    "panino-salamella",
-    "panino-hot-dog",
-    "panino-hamburger",
-    "patatine",
-    "nuggets-pollo",
-    "frutta",
-  ];
-
-  const gridProducts = priorityIds
-    .map((id) => findProduct(activeProducts, id))
-    .filter(Boolean) as Product[];
+  const gridProducts = activeProducts.filter(
+    (product: Product) =>
+      product.id !== "combo-bibita" &&
+      product.id !== "combo-birra"
+  );
 
   return (
     <main className="min-h-screen bg-black flex items-center justify-center overflow-hidden">
       <section className="relative aspect-video w-full max-w-[1920px] overflow-hidden bg-black text-white">
         {fastFoodOpen ? (
           <div className="grid h-full grid-cols-[360px_1fr] gap-3 p-3 font-[family-name:var(--font-caveat)]">
-            {/* COLONNA SINISTRA: DATA + PROMOZIONI */}
-
             <aside
               className="flex flex-col overflow-hidden"
               style={{
@@ -204,56 +193,56 @@ export default async function TvPage() {
               </div>
             </aside>
 
-            {/* DESTRA: GRIGLIA UNIFORME */}
-
             <section
-              className="grid h-full grid-cols-4 grid-rows-2 gap-3"
+              className="flex h-full flex-col gap-3 overflow-hidden"
               style={{
                 backgroundImage: "url('/menu-bg.jpg')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
-              {gridProducts.map((product: Product) => (
-                <article
-                  key={product.id}
-                  className="flex flex-col items-center justify-center px-4 text-center"
-                >
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={product.image}
-                      alt={getDisplayName(product)}
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                    />
-                  </div>
+              <div className="grid flex-1 grid-cols-4 gap-x-5 gap-y-3 px-6 py-5">
+                {gridProducts.map((product: Product) => (
+                  <article
+                    key={product.id}
+                    className="flex flex-col items-center justify-center text-center"
+                  >
+                    <div className="relative h-40 w-full">
+                      <Image
+                        src={product.image}
+                        alt={getDisplayName(product)}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                      />
+                    </div>
 
-                  <h2 className="mt-2 text-[2rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
-                    {getDisplayName(product)}
-                  </h2>
+                    <h2 className="mt-2 text-[1.65rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
+                      {getDisplayName(product)}
+                    </h2>
 
-                  {product.subtitle && (
-                    <p className="mt-1 text-[1.6rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
-                      {product.subtitle}
+                    {product.subtitle && (
+                      <p className="mt-1 text-[1.35rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
+                        {product.subtitle}
+                      </p>
+                    )}
+
+                    <p className="mt-2 text-4xl font-black leading-none drop-shadow-lg">
+                      {product.price}
                     </p>
-                  )}
+                  </article>
+                ))}
+              </div>
 
-                  <p className="mt-2 text-5xl font-black leading-none drop-shadow-lg">
-                    {product.price}
-                  </p>
-                </article>
-              ))}
-
-<article className="flex flex-col items-center justify-center px-0 text-center">
-  <div className="relative h-[23rem] w-full scale-110">
-    <Image
-      src="/menu-combo-footer.jpg"
-      alt="Menu combo"
-      fill
-      className="object-contain drop-shadow-2xl"
-    />
-  </div>
-</article>
+              <div className="border-t-4 border-white/50 px-6 py-4">
+                <div className="relative mx-auto h-[15rem] w-full">
+                  <Image
+                    src="/menu-combo-footer.jpg"
+                    alt="Menu combo"
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                  />
+                </div>
+              </div>
             </section>
           </div>
         ) : (
