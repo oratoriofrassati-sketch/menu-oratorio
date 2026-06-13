@@ -247,16 +247,16 @@ export default async function TvPage() {
                 </article>
               ))}
 
-              <article className="flex flex-col items-center justify-center px-4 text-center">
-                <div className="relative h-64 w-full">
-                  <Image
-                    src="/menu-combo-footer.jpg"
-                    alt="Menu combo"
-                    fill
-                    className="object-contain drop-shadow-2xl"
-                  />
-                </div>
-              </article>
+<article className="flex flex-col items-center justify-center px-0 text-center">
+  <div className="relative h-[23rem] w-full scale-125">
+    <Image
+      src="/menu-combo-footer.jpg"
+      alt="Menu combo"
+      fill
+      className="object-contain drop-shadow-2xl"
+    />
+  </div>
+</article>
             </section>
           </div>
         ) : (
