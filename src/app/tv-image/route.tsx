@@ -19,22 +19,12 @@ type PromotionRow = {
   promo_price: string;
   sort_order: number;
   promotions:
-    | {
-        id: string;
-        name: string;
-        image: string;
-      }
-    | {
-        id: string;
-        name: string;
-        image: string;
-      }[];
+    | { id: string; name: string; image: string }
+    | { id: string; name: string; image: string }[];
 };
 
 function formatMenuDate(menuDate?: string | null) {
-  const date = menuDate
-    ? new Date(`${menuDate}T12:00:00`)
-    : new Date();
+  const date = menuDate ? new Date(`${menuDate}T12:00:00`) : new Date();
 
   return new Intl.DateTimeFormat("it-IT", {
     weekday: "long",
@@ -45,10 +35,7 @@ function formatMenuDate(menuDate?: string | null) {
 }
 
 function getDisplayName(product: Product) {
-  if (product.id === "nuggets-pollo") {
-    return "Nuggets di pollo (9 pezzi)";
-  }
-
+  if (product.id === "nuggets-pollo") return "Nuggets di pollo (9 pezzi)";
   return product.name;
 }
 
@@ -60,9 +47,7 @@ export async function GET(request: Request) {
     .select("*")
     .order("sort_order", { ascending: true });
 
-  const { data: activeMenu } = await supabase
-    .from("active_menu")
-    .select("*");
+  const { data: activeMenu } = await supabase.from("active_menu").select("*");
 
   const { data: settings } = await supabase
     .from("settings")
@@ -88,16 +73,17 @@ export async function GET(request: Request) {
     .order("sort_order", { ascending: true })
     .limit(2);
 
-  const fastFoodOpen = settings?.fast_food_open ?? true;
-  const menuDate = formatMenuDate(settings?.menu_date);
-
-  const activeIds =
-    activeMenu?.map((item) => item.product_id) || [];
+  const activeIds = activeMenu?.map((item) => item.product_id) || [];
 
   const activeProducts =
-    products?.filter((product: Product) =>
-      activeIds.includes(product.id)
-    ) || [];
+    products?.filter((product: Product) => activeIds.includes(product.id)) || [];
+
+  const gridProducts = activeProducts
+    .filter(
+      (product: Product) =>
+        product.id !== "combo-bibita" && product.id !== "combo-birra"
+    )
+    .slice(0, 9);
 
   const promotions = ((activePromotions || []) as PromotionRow[])
     .map((item) => ({
@@ -110,11 +96,8 @@ export async function GET(request: Request) {
     }))
     .filter((item) => item.promotion);
 
-  const gridProducts = activeProducts.filter(
-    (product: Product) =>
-      product.id !== "combo-bibita" &&
-      product.id !== "combo-birra"
-  );
+  const fastFoodOpen = settings?.fast_food_open ?? true;
+  const menuDate = formatMenuDate(settings?.menu_date);
 
   return new ImageResponse(
     (
@@ -123,55 +106,39 @@ export async function GET(request: Request) {
           width: "1920px",
           height: "1080px",
           display: "flex",
-          backgroundColor: "#000000",
-          color: "white",
-          padding: "12px",
+          background: "#000",
+          color: "#fff",
+          padding: "14px",
+          gap: "14px",
           fontFamily: "Arial Black, Arial, sans-serif",
         }}
       >
         {fastFoodOpen ? (
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              height: "100%",
-              gap: "12px",
-            }}
-          >
-            <aside
+          <>
+            <div
               style={{
                 width: "360px",
-                height: "100%",
+                height: "1052px",
                 display: "flex",
                 flexDirection: "column",
-                backgroundImage: `url(${origin}/menu-bg.jpg)`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                overflow: "hidden",
-                padding: "16px 20px",
+                background: "#151515",
+                padding: "18px",
               }}
             >
               <div
                 style={{
-                  textAlign: "center",
                   fontSize: "38px",
                   fontWeight: 900,
+                  textAlign: "center",
                   textTransform: "uppercase",
                   lineHeight: 1.05,
-                  marginBottom: "20px",
+                  marginBottom: "18px",
                 }}
               >
                 {menuDate}
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "24px",
-                  flex: 1,
-                }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                 {promotions.map((promo) => (
                   <div
                     key={promo.promotion_id}
@@ -179,15 +146,13 @@ export async function GET(request: Request) {
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
-                      textAlign: "center",
                     }}
                   >
                     <img
                       src={`${origin}${promo.promotion.image}`}
-                      alt={promo.promotion.name}
                       style={{
-                        width: "100%",
-                        height: "210px",
+                        width: "300px",
+                        height: "220px",
                         objectFit: "contain",
                       }}
                     />
@@ -196,7 +161,6 @@ export async function GET(request: Request) {
                       style={{
                         display: "flex",
                         alignItems: "flex-end",
-                        justifyContent: "center",
                         gap: "14px",
                         marginTop: "8px",
                       }}
@@ -225,69 +189,66 @@ export async function GET(request: Request) {
                     </div>
                   </div>
                 ))}
+              </div>
 
-                <div
+              <div
+                style={{
+                  marginTop: "auto",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src={`${origin}/menu-combo-footer.jpg`}
                   style={{
-                    marginTop: "auto",
-                    display: "flex",
-                    justifyContent: "center",
+                    width: "300px",
+                    height: "230px",
+                    objectFit: "contain",
                   }}
-                >
-                  <img
-                    src={`${origin}/menu-combo-footer.jpg`}
-                    alt="Menu combo"
-                    style={{
-                      width: "100%",
-                      height: "220px",
-                      objectFit: "contain",
-                    }}
-                  />
-                </div>
+                />
               </div>
 
               <div
                 style={{
                   borderTop: "4px solid #fde047",
-                  marginTop: "16px",
+                  marginTop: "14px",
                   paddingTop: "12px",
-                  textAlign: "center",
                   fontSize: "20px",
                   fontWeight: 900,
                   fontStyle: "italic",
+                  textAlign: "center",
                 }}
               >
                 Menu soggetto a disponibilità
               </div>
-            </aside>
+            </div>
 
-            <section
+            <div
               style={{
-                flex: 1,
-                height: "100%",
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gridTemplateRows: "repeat(3, 1fr)",
-                gap: "10px",
-                backgroundImage: `url(${origin}/menu-bg.jpg)`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                padding: "18px 28px",
+                width: "1518px",
+                height: "1052px",
+                display: "flex",
+                flexWrap: "wrap",
+                background: "#151515",
+                padding: "28px",
               }}
             >
-              {gridProducts.slice(0, 9).map((product: Product) => (
-                <article
+              {gridProducts.map((product: Product) => (
+                <div
                   key={product.id}
                   style={{
+                    width: "33.333%",
+                    height: "33.333%",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
                     textAlign: "center",
+                    padding: "8px",
                   }}
                 >
                   <img
                     src={`${origin}${product.image}`}
-                    alt={getDisplayName(product)}
                     style={{
                       width: "100%",
                       height: "170px",
@@ -297,11 +258,11 @@ export async function GET(request: Request) {
 
                   <div
                     style={{
-                      marginTop: "8px",
+                      marginTop: "10px",
                       fontSize: "34px",
                       fontWeight: 900,
-                      textTransform: "uppercase",
                       lineHeight: 1,
+                      textTransform: "uppercase",
                     }}
                   >
                     {getDisplayName(product)}
@@ -310,11 +271,11 @@ export async function GET(request: Request) {
                   {product.subtitle && (
                     <div
                       style={{
-                        marginTop: "4px",
+                        marginTop: "5px",
                         fontSize: "26px",
                         fontWeight: 900,
-                        textTransform: "uppercase",
                         color: "#fde047",
+                        textTransform: "uppercase",
                         lineHeight: 1,
                       }}
                     >
@@ -324,7 +285,7 @@ export async function GET(request: Request) {
 
                   <div
                     style={{
-                      marginTop: "8px",
+                      marginTop: "10px",
                       fontSize: "52px",
                       fontWeight: 900,
                       lineHeight: 1,
@@ -332,26 +293,24 @@ export async function GET(request: Request) {
                   >
                     {product.price}
                   </div>
-                </article>
+                </div>
               ))}
-            </section>
-          </div>
+            </div>
+          </>
         ) : (
           <div
             style={{
               width: "100%",
               height: "100%",
-              backgroundImage: `url(${origin}/menu-bg.jpg)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              background: "#111",
             }}
           >
             <div
               style={{
-                backgroundColor: "rgba(255,255,255,0.95)",
+                background: "#fff",
                 color: "#12377a",
                 borderRadius: "32px",
                 padding: "60px 90px",
@@ -359,26 +318,11 @@ export async function GET(request: Request) {
                 fontWeight: 900,
               }}
             >
-              <div
-                style={{
-                  fontSize: "86px",
-                  lineHeight: 1.1,
-                  textTransform: "uppercase",
-                }}
-              >
+              <div style={{ fontSize: "86px", lineHeight: 1.1 }}>
                 Questa sera
                 <br />
                 il Fast Food
                 <br />è chiuso
-              </div>
-
-              <div
-                style={{
-                  marginTop: "36px",
-                  fontSize: "42px",
-                }}
-              >
-                Vi aspettiamo alla prossima serata!
               </div>
             </div>
           </div>
