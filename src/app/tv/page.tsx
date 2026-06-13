@@ -64,9 +64,6 @@ function getDisplayName(product: Product) {
   return product.name;
 }
 
-function findProduct(products: Product[], id: string) {
-  return products.find((product) => product.id === id);
-}
 
 export default async function TvPage() {
   const { data: products } = await supabase
