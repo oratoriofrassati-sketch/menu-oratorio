@@ -41,7 +41,7 @@ export async function GET(request: Request) {
         timeout: 60000,
       });
 
-      await page.waitForTimeout(1500);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const screenshot = await page.screenshot({
         type: "png",
