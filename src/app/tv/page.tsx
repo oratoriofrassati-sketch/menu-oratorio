@@ -64,6 +64,10 @@ function getDisplayName(product: Product) {
   return product.name;
 }
 
+function findProduct(products: Product[], id: string) {
+  return products.find((product) => product.id === id);
+}
+
 export default async function TvPage() {
   const { data: products } = await supabase
     .from("products")
@@ -123,37 +127,29 @@ export default async function TvPage() {
     }))
     .filter((item) => item.promotion);
 
-  const frittiProducts = activeProducts.filter(
-    (product: Product) =>
-      product.id === "patatine" ||
-      product.id === "nuggets-pollo"
-  );
+  const priorityIds = [
+    "vegetariano",
+    "panino-salamella",
+    "panino-hot-dog",
+    "panino-hamburger",
+    "patatine",
+    "nuggets-pollo",
+    "frutta",
+  ];
 
-  const dessertProducts = activeProducts.filter(
-    (product: Product) =>
-      product.id === "frutta" ||
-      product.id === "dolce"
-  );
-
-  const paniniProducts = activeProducts.filter(
-    (product: Product) =>
-      product.id !== "patatine" &&
-      product.id !== "nuggets-pollo" &&
-      product.id !== "frutta" &&
-      product.id !== "dolce" &&
-      product.id !== "combo-bibita" &&
-      product.id !== "combo-birra"
-  );
+  const gridProducts = priorityIds
+    .map((id) => findProduct(activeProducts, id))
+    .filter(Boolean) as Product[];
 
   return (
     <main className="min-h-screen bg-black flex items-center justify-center overflow-hidden">
       <section className="relative aspect-video w-full max-w-[1920px] overflow-hidden bg-black text-white">
         {fastFoodOpen ? (
-          <div className="grid h-full grid-cols-[360px_1fr_440px] grid-rows-[1fr_360px] gap-3 p-3 font-[family-name:var(--font-caveat)]">
+          <div className="grid h-full grid-cols-[360px_1fr] gap-3 p-3 font-[family-name:var(--font-caveat)]">
             {/* COLONNA SINISTRA: DATA + PROMOZIONI */}
 
             <aside
-              className="col-start-1 col-end-2 row-start-1 row-end-3 flex flex-col overflow-hidden border-r-4 border-black"
+              className="flex flex-col overflow-hidden"
               style={{
                 backgroundImage: "url('/menu-bg.jpg')",
                 backgroundSize: "cover",
@@ -211,149 +207,56 @@ export default async function TvPage() {
               </div>
             </aside>
 
-            {/* CENTRO: PANINI */}
+            {/* DESTRA: GRIGLIA UNIFORME */}
 
             <section
-              className="col-start-2 col-end-3 row-start-1 row-end-2 overflow-hidden px-4 py-4"
+              className="grid h-full grid-cols-4 grid-rows-2 gap-3"
               style={{
                 backgroundImage: "url('/menu-bg.jpg')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
-              <h2 className="mb-2 text-center text-4xl font-black uppercase leading-none drop-shadow-xl">
-                Panini
-              </h2>
+              {gridProducts.map((product: Product) => (
+                <article
+                  key={product.id}
+                  className="flex flex-col items-center justify-center px-4 text-center"
+                >
+                  <div className="relative h-48 w-full">
+                    <Image
+                      src={product.image}
+                      alt={getDisplayName(product)}
+                      fill
+                      className="object-contain drop-shadow-2xl"
+                    />
+                  </div>
 
-              <div className="grid h-[calc(100%-3rem)] grid-cols-2 grid-rows-2 gap-x-8 gap-y-4">
-                {paniniProducts.slice(0, 4).map((product: Product) => (
-                  <article
-                    key={product.id}
-                    className="text-center"
-                  >
-                    <div className="relative mx-auto h-44 w-full">
-                      <Image
-                        src={product.image}
-                        alt={getDisplayName(product)}
-                        fill
-                        className="object-contain drop-shadow-2xl"
-                      />
-                    </div>
+                  <h2 className="mt-2 text-[2rem] font-black uppercase leading-none tracking-wide drop-shadow-lg">
+                    {getDisplayName(product)}
+                  </h2>
 
-                    <h3 className="mt-1 text-[1.75rem] font-black uppercase leading-none drop-shadow-lg">
-                      {getDisplayName(product)}
-                    </h3>
-
-                    <p className="mt-1 text-3xl font-black leading-none drop-shadow-lg">
-                      {product.price}
+                  {product.subtitle && (
+                    <p className="mt-1 text-[1.6rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
+                      {product.subtitle}
                     </p>
-                  </article>
-                ))}
-              </div>
-            </section>
+                  )}
 
-            {/* DESTRA ALTA: FRITTI */}
+                  <p className="mt-2 text-5xl font-black leading-none drop-shadow-lg">
+                    {product.price}
+                  </p>
+                </article>
+              ))}
 
-            <section
-              className="col-start-3 col-end-4 row-start-1 row-end-2 overflow-hidden px-5 py-4"
-              style={{
-                backgroundImage: "url('/menu-bg.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <h2 className="mb-4 text-center text-4xl font-black uppercase leading-none drop-shadow-xl">
-                Fritti
-              </h2>
-
-              <div className="grid h-[calc(100%-3rem)] grid-cols-1 gap-4">
-                {frittiProducts.map((product: Product) => (
-                  <article
-                    key={product.id}
-                    className="flex flex-col items-center justify-center text-center"
-                  >
-                    <div className="relative h-52 w-full">
-                      <Image
-                        src={product.image}
-                        alt={getDisplayName(product)}
-                        fill
-                        className="object-contain drop-shadow-2xl"
-                      />
-                    </div>
-
-                    <h3 className="mt-2 text-[1.75rem] font-black uppercase leading-none drop-shadow-lg">
-                      {getDisplayName(product)}
-                    </h3>
-
-                    <p className="mt-2 text-3xl font-black leading-none drop-shadow-lg">
-                      {product.price}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            {/* DESTRA BASSA SINISTRA: DESSERT */}
-
-            <section
-              className="col-start-2 col-end-3 row-start-2 row-end-3 overflow-hidden px-5 py-4"
-              style={{
-                backgroundImage: "url('/menu-bg.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <div className="grid h-full grid-cols-2 gap-4">
-                {dessertProducts.map((product: Product) => (
-                  <article
-                    key={product.id}
-                    className="flex flex-col items-center justify-center text-center"
-                  >
-                    <div className="relative h-36 w-full">
-                      <Image
-                        src={product.image}
-                        alt={getDisplayName(product)}
-                        fill
-                        className="object-contain drop-shadow-2xl"
-                      />
-                    </div>
-
-                    <h3 className="text-[1.45rem] font-black uppercase leading-none drop-shadow-lg">
-                      {getDisplayName(product)}
-                    </h3>
-
-                    {product.subtitle && (
-                      <p className="text-[1.2rem] font-black uppercase leading-none text-yellow-300 drop-shadow-lg">
-                        {product.subtitle}
-                      </p>
-                    )}
-
-                    <p className="mt-1 text-2xl font-black leading-none drop-shadow-lg">
-                      {product.price}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            {/* DESTRA BASSA: FOOTER COMBO */}
-
-            <section
-              className="col-start-2 col-end-4 row-start-2 row-end-3 overflow-hidden px-5 py-4"
-              style={{
-                backgroundImage: "url('/menu-bg.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <div className="relative h-full w-full">
-                <Image
-                  src="/menu-combo-footer.jpg"
-                  alt="Menu combo"
-                  fill
-                  className="object-contain drop-shadow-2xl"
-                />
-              </div>
+              <article className="flex flex-col items-center justify-center px-4 text-center">
+                <div className="relative h-64 w-full">
+                  <Image
+                    src="/menu-combo-footer.jpg"
+                    alt="Menu combo"
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                  />
+                </div>
+              </article>
             </section>
           </div>
         ) : (
