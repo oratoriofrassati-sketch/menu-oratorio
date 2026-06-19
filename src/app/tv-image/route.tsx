@@ -40,7 +40,8 @@ export async function GET(request: Request) {
         viewport: {
           width: 1920,
           height: 1080,
-          deviceScaleFactor: 2,
+          deviceScaleFactor: 1,
+          isMobile: false,
         },
         gotoOptions: {
           waitUntil: "networkidle2",
@@ -62,10 +63,13 @@ export async function GET(request: Request) {
   }
 
   const image = await response.arrayBuffer();
+
   return new Response(image, {
-  headers: {
-    "Content-Type": "image/png",
-    "Cache-Control": "no-store, no-cache, must-revalidate",
-  },
-});
+    status: 200,
+    headers: {
+      "Content-Type": "image/png",
+      "Content-Disposition": 'inline; filename="menu-tv.png"',
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+    },
+  });
 }
